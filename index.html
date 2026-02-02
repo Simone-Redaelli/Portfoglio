@@ -348,7 +348,7 @@
                     <i class="fas fa-envelope"></i>
                     <div class="info-details">
                         <h4>Email:</h4>
-                        <p>alba70335@gmail.com</p>
+                        <p>amministrazione@simoneredaelli</p>
                     </div>
                 </div>
                 
@@ -360,26 +360,30 @@
             </div>
 
     
-            <div class="contact-form-container">
-                <form action="mailto:alba70335@gmail.com" method="post" enctype="text/plain">
-                    <form
-  action="https://formspree.io/f/xojlpwag"
-  method="POST"
->
-  <label>
-    Your email:
-    <input type="email" name="email">
-  </label>
-  <label>
-    Your message:
-    <textarea name="message"></textarea>
-  </label>
-  <!-- your other form fields go here -->
-  <button type="submit">Send</button>
+    <form action="https://formspree.io/f/xojlpwag" method="POST">
+
+    <div class="input-group">
+        <label>Nome</label>
+        <input type="text" name="name" placeholder="es. Mario Rossi" required>
+    </div>
+
+    <div class="input-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="es. mail@esempio.com" required>
+    </div>
+
+    <div class="input-group">
+        <label>Telefono</label>
+        <input type="text" name="phone" placeholder="Numero di Telefono">
+    </div>
+
+    <div class="input-group">
+        <label>Messaggio</label>
+        <textarea name="message" placeholder="Descrivi la tua richiesta..." required></textarea>
+    </div>
+
+    <button type="submit">INVIA</button>
 </form>
-                    <button type="submit" class="btn-submit">INVIA</button>
-                </form>
-            </div>
             
             <p class="footer-copyright">© 2024 Simone Redaelli - 5A SIA</p>
         </div>
