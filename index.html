@@ -34,28 +34,24 @@
         <span>Simone Redaelli</span>
     </div>
 
-    <div class="hamburger" onclick="toggleMenu()">
-        <i class="fas fa-bars"></i>
-    </div>
-
-    <ul class="menu" id="mobileMenu">
-        <li><a href="#inizio" onclick="toggleMenu()">Home.</a></li>
-        <li><a href="#primi" onclick="toggleMenu()">Su di me.</a></li>
-        <li><a href="#skills" onclick="toggleMenu()">Skills</a></li>
-        <li><a href="#progetti" onclick="toggleMenu()">Portfolio</a></li>
-        <li><a href="#certificati" onclick="toggleMenu()">Certificazioni</a></li>
-        <li><a href="#contatti" onclick="toggleMenu()">Contatti</a></li>
+    <ul class="menu">
+        <li><a href="#inizio" class="active">Home.</a></li>
+        <li><a href="#primi">Su di me.</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#progetti">Portfolio</a></li>
+        <li><a href="#certificati">Certificazioni</a></li>
+        <li><a href="#contatti">Contatti</a></li>
     </ul>
-
-    <div class="nav-extras">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Cerca...">
-            <button onclick="searchInPage()">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-        <i class="fas fa-moon" id="theme-toggle"></i>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Cerca nel sito...">
+        <button onclick="searchInPage()">
+            <i class="fas fa-search"></i>
+        </button>
     </div>
+
+  
+
+    <i class="fas fa-moon" id="theme-toggle"></i>
 </nav>
 
 <div id="inizio"></div>
@@ -725,3 +721,4 @@ function scrollToTop() {
 
 </body>
 </html>
+
