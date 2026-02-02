@@ -361,25 +361,30 @@
 
     
     <div class="contact-form-container">
-                <form action="mailto:alba70335@gmail.com" method="post" enctype="text/plain">
-                    <div class="form-group">
-                        <label for="nome">Nome</label>
-                        <input type="text" id="nome" name="nome" class="form-input" placeholder="es. Mario Rossi" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" class="form-input" placeholder="es. mariorossi@mail.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="telefono">Telefono</label>
-                        <input type="tel" id="telefono" name="telefono" class="form-input" placeholder="Numero di Telefono">
-                    </div>
-                    <div class="form-group">
-                        <label for="messaggio">Messaggio</label>
-                        <textarea id="messaggio" name="messaggio" rows="4" class="form-input" placeholder="Descrivi la tua richiesta..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn-submit">INVIA</button>
-                </form>
+                <form action="https://formspree.io/f/IL_TUO_CODICE" method="POST">
+
+    <div class="input-group">
+        <label>Nome</label>
+        <input type="text" name="name" placeholder="es. Mario Rossi" required>
+    </div>
+
+    <div class="input-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="es. mail@esempio.com" required>
+    </div>
+
+    <div class="input-group">
+        <label>Telefono</label>
+        <input type="text" name="phone" placeholder="Numero di Telefono">
+    </div>
+
+    <div class="input-group">
+        <label>Messaggio</label>
+        <textarea name="message" placeholder="Descrivi la tua richiesta..." required></textarea>
+    </div>
+
+    <button type="submit">INVIA</button>
+</form>
             </div>
             
             <p class="footer-copyright">© 2024 Simone Redaelli - 5A SIA</p>
