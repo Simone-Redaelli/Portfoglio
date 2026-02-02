@@ -696,27 +696,6 @@ function scrollToTop() {
     });
 </script>
 
-<script>
-    function toggleMenu() {
-        const menu = document.getElementById('mobileMenu');
-        const icon = document.querySelector('.hamburger i');
-        
-       
-        menu.classList.toggle('active');
-
-        
-        if (menu.classList.contains('active')) {
-            icon.classList.remove('fa-bars');
-            icon.classList.add('fa-times');
-            document.body.style.overflow = 'hidden'; 
-        } else {
-            icon.classList.remove('fa-times');
-            icon.classList.add('fa-bars');
-            document.body.style.overflow = 'auto'; 
-        }
-    }
-</script>
-
 
 
 
@@ -725,3 +704,4 @@ function scrollToTop() {
 
 </body>
 </html>
+
