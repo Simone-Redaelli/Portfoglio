@@ -1439,3 +1439,64 @@ a, button, input {
     }
 }
 
+/* =========================================
+   MEDIA QUERIES (PER CELLULARI E TABLET)
+   ========================================= */
+@media screen and (max-width: 768px) {
+    
+    /* 1. Modifichiamo il layout della NAV per il mobile */
+    nav {
+        padding: 15px 20px; /* Riduciamo il padding */
+        background-color: rgba(2, 12, 27, 0.95); /* Sfondo più scuro per leggere meglio */
+    }
+
+    /* 2. Mostriamo l'Hamburger Icon */
+    .hamburger {
+        display: block; /* Ora si vede! */
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--toggle-color);
+        z-index: 1001; /* Sopra al menu */
+    }
+
+    /* 3. Nascondiamo e stilizziamo il menu lista */
+    .menu {
+        position: fixed;
+        top: 0;
+        right: -100%; /* Nascondiamo il menu fuori dallo schermo a destra */
+        left: auto; /* Resettiamo il left del desktop */
+        width: 70%; /* Larghezza del menu laterale */
+        height: 100vh;
+        background-color: #0a2e4e; /* Colore sfondo menu */
+        flex-direction: column; /* Link uno sotto l'altro */
+        justify-content: center;
+        align-items: center;
+        transform: none; /* Rimuoviamo il centra-menu del desktop */
+        transition: 0.4s ease; /* Animazione fluida */
+        box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+        z-index: 1000;
+    }
+
+    /* 4. Classe ACTIVE: Cosa succede quando clicchi l'hamburger */
+    .menu.active {
+        right: 0; /* Il menu entra nello schermo */
+    }
+
+    /* Stile dei link nel menu mobile */
+    .menu li {
+        margin: 20px 0;
+    }
+
+    .menu a {
+        font-size: 1.2rem; /* Testo più grande su mobile */
+        color: #fff;
+    }
+
+    /* 5. Gestione extra (Cerca e Tema) su mobile */
+    /* Spesso conviene nascondere la barra di ricerca su mobile o rimpicciolirla */
+    .nav-extras {
+        display: none; /* Nascondi ricerca su mobile per fare spazio (opzionale) */
+    }
+    
+    /* Se vuoi tenere il cambio tema, spostalo fuori da .nav-extras o gestiscilo diversamente */
+}
