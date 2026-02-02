@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simone Redaelli - Portfolio SIA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <div id="preloader">
+        <div class="loader-content">
+            <span class="loader-text">SR</span>
+            <div class="loader-ring"></div>
+        </div>
+    </div>
+    <div class="cursor-dot" data-cursor-dot></div>
+    <div class="cursor-outline" data-cursor-outline></div>
+    <div class="background-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<nav>
+    <div class="logo">
+        <div class="logo-sr">SR</div>
+        <span>Simone Redaelli</span>
+    </div>
+
+    <ul class="menu">
+        <li><a href="#inizio" class="active">Home.</a></li>
+        <li><a href="#primi">Su di me.</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#progetti">Portfolio</a></li>
+        <li><a href="#certificati">Certificazioni</a></li>
+        <li><a href="#contatti">Contatti</a></li>
+    </ul>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Cerca nel sito...">
+        <button onclick="searchInPage()">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
+  
+
+    <i class="fas fa-moon" id="theme-toggle"></i>
+</nav>
+
+<div id="inizio"></div>
+<div class="hero-section reveal">
+    
+    <div class="profile-img-container">
+        <img src="Simone.Redaelli.png" alt="Simone Redaelli a braccia incrociate" class="profile-img">
+    </div>
+
+    <div class="hero-text-container">
+    
+        <p style="color: #00dbde; font-weight: 600; margin-bottom: 5px; text-align: left;">
+            Ciao, sono
+        </p>
+        
+        <h1 class="glitch-name" data-text="Simone Redaelli">Simone Redaelli</h1>
+        
+        <div style="display: flex; justify-content: flex-start; margin-bottom: 30px; align-items: center;">
+            <p style="margin: 0; font-size: 1.1rem; color: #fff;">
+                <span id="typewriter-text"></span>
+                <span class="cursor">|</span>
+            </p>
+        </div>
+    
+        <p style="text-align: left; margin-bottom: 40px; color: #d1d1d1; line-height: 1.6; max-width: 500px;">
+            Benvenuto nel mio portfolio personale. Sono un appassionato di informatica gestionale ed economia, 
+            pronto a trasformare problemi complessi in soluzioni digitali efficienti.
+        </p>
+        
+    </div>
+
+</div>
+
+
+    <h2 id="primi">Primi anni di Simone</h2>
+    
+    <div class="glass-card">
+        <table>
+          <tr>
+            <td>
+                <b>Simone Redaelli</b> Nasce nella splendida citta' di Torino il 30-09-2007. Fin da subito e' sempre stato un ragazzo molto calmo, ma allo stesso tempo molto timido.<br><br>
+                Nel 2010 inizia ad andare all'asilo, dove incomincia a fare amicizia. Passano gli anni e nel 2013 inizia le elementari: la scuola Guido Gozzano. <br><br>
+                E' stata per lui una casa per 5 anni. Dopo aver finito questi splendidi anni, prosegue i suoi studi nella scuola secondaria di primo grado Pier Giorgio Frassati.
+            </td>
+          </tr>
+        </table>
+    </div>
+
+    <h2 id="crescita">Crescita di Simone</h2>
+
+    <div class="glass-card">
+        <table>
+          <tr>
+            <td>
+            Con il passare del tempo, all'eta di 14 anni, inizia a frequentare la scuola superiore di secondo grado "Russell - Moro - Guarini" e all'eta' di 15 anni sceglie di specializzarsi in Sistemi Informativi Aziendali. <br><br>
+            Nel frattempo inizano a nascere delle nuove passioni tra cui, in ambito sportivo, l'amore per il padel e successivamente per il football americano.
+            </td>
+          </tr>
+        </table>
+    </div>
+    <div class="stats-section">
+        <div class="stats-container glass-card">
+            
+            <div class="stat-item">
+                <i class="fas fa-code"></i>
+                <h3 class="counter" data-target="5000">0</h3>
+                <p>Righe di Codice</p>
+            </div>
+    
+            <div class="stat-item">
+                <i class="fas fa-project-diagram"></i>
+                <h3 class="counter" data-target="15">0</h3>
+                <p>Progetti Finiti</p>
+            </div>
+    
+            <div class="stat-item">
+                <i class="fas fa-clock"></i>
+                <h3 class="counter" data-target="1200">0</h3>
+                <p>Ore di Studio</p>
+            </div>
+    
+            <div class="stat-item">
+                <i class="fas fa-coffee"></i>
+                <h3 class="counter" data-target="350">0</h3>
+                <p>Caffè Bevuti</p>
+            </div>
+    
+        </div>
+    </div>
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2024 - Oggi</div>
+            <div class="timeline-content glass-card">
+                <h3>Sviluppo Web Freelance</h3>
+                <p>Creazione di siti vetrina e e-commerce per piccole imprese locali.</p>
+            </div>
+        </div>
+    
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">2019 - 2024</div>
+            <div class="timeline-content glass-card">
+                <h3>Diploma SIA (Sistemi Informativi Aziendali)</h3>
+                <p>Focus su Informatica, Economia Aziendale e Gestione Database.</p>
+            </div>
+        </div>
+        
+        </div>
+
+         <h2 id="skills">Le mie Competenze</h2>
+        <div class="glass-card">
+            <div class="skill-box">
+                <span class="skill-title">HTML & CSS</span>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill html-fill"></div>
+                </div>
+            </div>
+            
+            <div class="skill-box">
+                <span class="skill-title">SQL & Database</span>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill sql-fill"></div>
+                </div>
+            </div>
+
+            <div class="skill-box">
+                <span class="skill-title">Economia Aziendale</span>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill css-fill"></div> </div>
+            </div>
+            <div class="skill-box">
+                <span class="skill-title">Utilizzo pacchetto Office</span>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill office-fill"></div> </div>
+            </div>
+
+            </div>
+        </div>
+        <section class="tech-stack-section">
+            <h2 style="text-align: center; width: 100%;">Il mio <span style="color: #00dbde;">Tech Stack</span></h2>
+            
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fab fa-html5"></i>
+                    </div>
+                    <p>HTML5</p>
+                </div>
+        
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fab fa-css3-alt"></i>
+                    </div>
+                    <p>CSS3</p>
+                </div>
+        
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fab fa-js"></i>
+                    </div>
+                    <p>JavaScript</p>
+                </div>
+        
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <p>SQL / MySQL</p>
+                </div>
+        
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <p>Python</p>
+                </div>
+        
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <p>Excel Pro</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="terminal-loader">
+            <div class="terminal-header">
+              <div class="terminal-controls">
+                <div class="control close"></div>
+                <div class="control minimize"></div>
+                <div class="control maximize"></div>
+              </div>
+              <div class="terminal-title">bash -- simone@portfolio</div>
+            </div>
+            <div class="terminal-content">
+              <p class="text">simone@dev:~$ <span class="command">npm install awesome-portfolio</span></p>
+              <p class="text">Installing dependencies...</p>
+              <p class="text success">Done! Simone is ready to code.</p>
+              <p class="text">simone@dev:~$ <span class="blink">_</span></p>
+            </div>
+          </div>
+
+        <h2 id="progetti">Progetti Scolastici & PCTO</h2>
+    <div class="glass-card">
+        <p style="text-align: left; margin-bottom: 15px;">
+            Durante il triennio SIA ho sviluppato diversi progetti pratici che uniscono informatica ed economia:
+        </p>
+        
+        <div class="projects-grid">
+            <div class="project-item">
+                <span class="project-title">Gestionale Magazzino</span>
+                <span class="project-desc">Database relazionale creato in Access per la gestione stock e fornitori.</span>
+            </div>
+
+            <div class="project-item">
+                <span class="project-title">Sito Web Portfolio</span>
+                <span class="project-desc">Sviluppo frontend HTML5/CSS3 con design responsive e animazioni.</span>
+            </div>
+
+            <div class="project-item">
+                <span class="project-title">Business Plan Start-up</span>
+                <span class="project-desc">Analisi economica, piano marketing e budget previsionale per una nuova impresa.</span>
+            </div>
+            <div class="project-item">
+                <span class="project-title">PTCTO - Internazione</span>
+                <span class="project-desc">Esperienza di visita aziendale e Exange Students a Dublino, Irlanda</span>
+            </div>
+        </div>
+    </div><h2 id="certificati">Certificazioni</h2>
+
+    <div class="glass-card reveal">
+        <div class="cert-grid">
+            
+            <div class="cert-item">
+                <span class="cert-icon">🇬🇧</span>
+                <span class="cert-title">Lingua Inglese</span>
+                <span class="cert-level">Livello B2</span>
+                <span class="cert-desc">Certificazione internazionale (Cambridge/First)</span>
+            </div>
+    
+            <div class="cert-item">
+                <span class="cert-icon">🇫🇷</span>
+                <span class="cert-title">Lingua Francese</span>
+                <span class="cert-level" style="color: #00dbde;">Livello C1</span> <span class="cert-desc">Livello avanzato (DALF/Esabac)</span>
+            </div>
+    
+            <div class="cert-item">
+                <span class="cert-icon">📊</span> <span class="cert-title">Zucchetti</span>
+                <span class="cert-level">Gestionale Aziendale</span>
+                <span class="cert-desc">Attestato di competenza su software contabilità e bilancio.</span>
+            </div>
+    
+        </div>
+    </div>
+
+    <section class="testimonials-section">
+        <h2 style="text-align: center;">Dicono di <span style="color: #00dbde;">me</span></h2>
+        <div class="testimonials-carousel">
+            <div class="testimonial-item glass-card">
+                <img src="path/to/profile1.jpg" alt="Nome Cognome" class="testimonial-avatar">
+                <p class="testimonial-text">"Simone ha dimostrato una grande proattività e una notevole capacità di problem-solving nel progetto X. Un vero talento!"</p>
+                <p class="testimonial-author">Prof. Rossi - Esperto di Sicurezza Informatica</p>
+            </div>
+            <div class="testimonial-item glass-card">
+                <img src="path/to/profile2.jpg" alt="Nome Cognome" class="testimonial-avatar">
+                <p class="testimonial-text">"La sua comprensione dei processi economici unita alle competenze tecniche lo rende un professionista completo e versatile."</p>
+                <p class="testimonial-author">Dott.ssa Bianchi - Consulente Finanziario</p>
+            </div>
+            </div>
+        <div class="carousel-nav">
+            <span class="dot active" data-slide="0"></span>
+            <span class="dot" data-slide="1"></span>
+            </div>
+    </section>
+
+    <div id="contatti"></div>
+    <section id="contatti-section">
+        <div class="contact-container reveal">
+            <div class="contact-info">
+                <h2>Hai un progetto da realizzare? Contattami!</h2>
+                <p>Mettiti in contatto e fammi sapere come posso aiutarti. Compila il form o usa i miei contatti diretti.</p>
+                
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="info-details">
+                        <h4>Indirizzo:</h4>
+                        <p>Torino, Italia</p>
+                    </div>
+                </div>
+    
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <div class="info-details">
+                        <h4>Email:</h4>
+                        <p>alba70335@gmail.com</p>
+                    </div>
+                </div>
+                
+                <div class="contact-social-links">
+                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+
+    
+            <div class="contact-form-container">
+                <form action="mailto:alba70335@gmail.com" method="post" enctype="text/plain">
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" name="nome" class="form-input" placeholder="es. Mario Rossi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="es. mariorossi@mail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Telefono</label>
+                        <input type="tel" id="telefono" name="telefono" class="form-input" placeholder="Numero di Telefono">
+                    </div>
+                    <div class="form-group">
+                        <label for="messaggio">Messaggio</label>
+                        <textarea id="messaggio" name="messaggio" rows="4" class="form-input" placeholder="Descrivi la tua richiesta..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">INVIA</button>
+                </form>
+            </div>
+            
+            <p class="footer-copyright">© 2024 Simone Redaelli - 5A SIA</p>
+        </div>
+    </section>
+    <button id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    <div id="custom-context-menu" class="context-menu">
+        <div class="context-item" onclick="window.print()">🖨️ Stampa CV</div>
+        <div class="context-item" onclick="window.location.href='mailto:tuaemail@gmail.com'">📧 Copia Email</div>
+        <div class="context-item" onclick="window.open('https://github.com/tuousername', '_blank')">🐙 GitHub Profile</div>
+        <div class="separator"></div>
+        <div class="context-item disabled">Console: Ready</div>
+        <div class="context-item disabled">Ping: 14ms</div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <script>
+        window.addEventListener('scroll', reveal);
+    
+        function reveal(){
+            var reveals = document.querySelectorAll('.reveal');
+    
+            for(var i = 0; i < reveals.length; i++){
+                var windowHeight = window.innerHeight;
+                var revealTop = reveals[i].getBoundingClientRect().top;
+                var revealPoint = 150; 
+    
+                if(revealTop < windowHeight - revealPoint){
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+    </script>
+    <script>
+               
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        window.addEventListener('mousemove', function(e) {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+           
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+       
+        const links = document.querySelectorAll('a, button, .glass-card');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursorOutline.style.width = '60px';
+                cursorOutline.style.height = '60px';
+                cursorOutline.style.backgroundColor = 'rgba(0, 219, 222, 0.2)';
+            });
+            link.addEventListener('mouseleave', () => {
+                cursorOutline.style.width = '40px';
+                cursorOutline.style.height = '40px';
+                cursorOutline.style.backgroundColor = 'transparent';
+            });
+        });
+        VanillaTilt.init(document.querySelectorAll(".glass-card"), {
+            max: 10,              
+            speed: 400,           
+            glare: true,          
+            "max-glare": 0.3,     
+        });
+    </script>
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+    
+        toggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+    
+            if (body.classList.contains('light-mode')) {
+                toggleBtn.classList.remove('fa-moon');
+                toggleBtn.classList.add('fa-sun');
+            } else {
+                toggleBtn.classList.remove('fa-sun');
+                toggleBtn.classList.add('fa-moon');
+            }
+        });
+    </script>
+
+<script>
+    function searchInPage() {
+        const input = document.getElementById('searchInput');
+        const searchText = input.value.trim();
+        const content = document.body; 
+
+        clearHighlights();
+
+        if (searchText === "") return;
+
+        const regex = new RegExp(`(${searchText})`, "gi"); 
+        
+        let found = false;
+
+        function highlightText(node) {
+            if (node.nodeType === 1 && (node.className === "search-box" || node.tagName === "SCRIPT" || node.tagName === "STYLE")) {
+                return;
+            }
+
+            if (node.nodeType === 3) {
+                const match = node.data.match(regex);
+                if (match) {
+                    const span = document.createElement('span');
+                    span.className = "highlight";
+                    span.innerHTML = node.data.replace(regex, '<span class="highlight-text">$1</span>');
+                    node.parentNode.replaceChild(span, node);
+                    found = true;
+                }
+            } else if (node.nodeType === 1) {
+                for (let i = 0; i < node.childNodes.length; i++) {
+                    highlightText(node.childNodes[i]);
+                }
+            }
+        }
+
+        highlightText(content);
+
+        if (found) {
+            const firstMatch = document.querySelector('.highlight-text');
+            if (firstMatch) {
+                firstMatch.scrollIntoView({behavior: "smooth", block: "center"});
+            }
+        } else {
+            input.style.border = "1px solid red";
+            setTimeout(() => input.style.border = "1px solid rgba(255,255,255,0.1)", 500);
+        }
+    }
+
+    function clearHighlights() {
+        const highlights = document.querySelectorAll('.highlight');
+        highlights.forEach(span => {
+            span.outerHTML = span.innerText; 
+        });
+    }
+
+    const searchInput = document.getElementById("searchInput");
+
+    searchInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            searchInPage();
+        }
+    });
+
+    searchInput.addEventListener("input", function() {
+        if (this.value === "") {
+            clearHighlights();
+        }
+    });
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            searchInput.value = "";
+            clearHighlights();
+            searchInput.blur();
+        }
+    });
+</script>
+<script>
+    const phrases = [
+        "Studente 5A SIA | Sviluppo Web & Economia",
+        "Appassionato di Cybersecurity & AI",
+        "Future Full Stack Developer" ,
+        "Esperto in Contabilità Aziendale"
+    ];
+    
+    const speed = 100;
+    const deleteSpeed = 50;
+    const pauseTime = 2000;
+
+    let textIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    const textElement = document.getElementById("typewriter-text");
+
+    function typeWriter() {
+        const currentPhrase = phrases[textIndex];
+
+        if (isDeleting) {
+            textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+            charIndex--;
+        } else {
+            textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+            charIndex++;
+        }
+
+        let typeSpeed = isDeleting ? deleteSpeed : speed;
+
+        if (!isDeleting && charIndex === currentPhrase.length) {
+            typeSpeed = pauseTime;
+            isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            textIndex = (textIndex + 1) % phrases.length;
+            typeSpeed = 500;
+        }
+
+        setTimeout(typeWriter, typeSpeed);
+    }
+
+    document.addEventListener('DOMContentLoaded', typeWriter);
+
+    window.onscroll = function() {
+    const btn = document.getElementById("backToTop");
+    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        btn.style.display = "block";
+    } else {
+        btn.style.display = "none";
+    }
+    };
+
+function scrollToTop() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+<script>
+    const counters = document.querySelectorAll('.counter');
+
+    const options = {
+        threshold: 0.5
+    };
+
+    const runCounter = (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = +counter.getAttribute('data-target');
+                const speed = 200;
+
+                const updateCount = () => {
+                    const count = +counter.innerText;
+                    
+                    const inc = target / speed;
+
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc);
+                        setTimeout(updateCount, 20);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+
+                updateCount();
+                observer.unobserve(counter);
+            }
+        });
+    };
+
+    const observer = new IntersectionObserver(runCounter, options);
+
+    counters.forEach(counter => {
+        observer.observe(counter);
+    });
+</script>
+<script>
+    window.addEventListener("load", function () {
+        const preloader = document.getElementById("preloader");
+        preloader.classList.add("preloader-hidden");
+        setTimeout(() => preloader.style.display = "none", 500);
+    });
+</script>
+
+<script>
+    const carousel = document.querySelector('.testimonials-carousel');
+    const items = document.querySelectorAll('.testimonial-item');
+    const dots = document.querySelectorAll('.carousel-nav .dot');
+    let currentIndex = 0;
+    const totalItems = items.length;
+
+    function showSlide(index) {
+        if (index >= totalItems) currentIndex = 0;
+        if (index < 0) currentIndex = totalItems - 1;
+        
+        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[currentIndex].classList.add('active');
+    }
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            currentIndex = parseInt(e.target.dataset.slide);
+            showSlide(currentIndex);
+        });
+    });
+
+    // Scorrimento automatico (opzionale)
+    setInterval(() => {
+        currentIndex++;
+        showSlide(currentIndex);
+    }, 7000); // Cambia ogni 7 secondi
+
+    // Inizializza il primo slide
+    showSlide(currentIndex);
+</script>
+
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault(); // Blocca il comportamento di default
+
+            // Dissolve la pagina e poi scrolla
+            document.body.style.opacity = 0; // Inizia dissolvenza
+            setTimeout(() => {
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                document.body.style.opacity = 1; // Riporta opacità
+            }, 300); // Durata della dissolvenza
+        });
+    });
+</script>
+<script>
+    const contextMenu = document.getElementById('custom-context-menu');
+    const scope = document.querySelector('body');
+
+    scope.addEventListener('contextmenu', (event) => {
+        event.preventDefault(); // Blocca il menu standard
+        
+        const { clientX: mouseX, clientY: mouseY } = event;
+        
+        contextMenu.style.top = `${mouseY}px`;
+        contextMenu.style.left = `${mouseX}px`;
+        contextMenu.style.display = 'block';
+    });
+
+    // Chiudi il menu se clicchi ovunque
+    scope.addEventListener('click', () => {
+        contextMenu.style.display = 'none';
+    });
+</script>
+
+
+
+
+
+</body>
+</html>
