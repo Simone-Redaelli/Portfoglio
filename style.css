@@ -1022,7 +1022,7 @@ a, button, input {
     background-color: #0d0d2b;
     width: 100%;
     max-width: 500px;
-    margin: 50px auto; /* Centrato */
+    margin: 50px auto; 
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     font-family: 'Courier New', monospace;
@@ -1062,7 +1062,6 @@ a, button, input {
   .command { color: #00dbde; }
   .success { color: #27c93f; }
   
-  /* Cursore che lampeggia */
   .blink {
     animation: blink-anim 1s infinite;
   }
@@ -1076,12 +1075,12 @@ a, button, input {
   .testimonials-section {
     padding: 80px 20px;
     text-align: center;
-    overflow: hidden; /* Nasconde le testimonianze fuori schermo */
+    overflow: hidden; 
     margin-bottom: 80px;
 }
 
 .testimonials-carousel {
-    display: flex; /* Tutte le testimonianze in fila */
+    display: flex; 
     transition: transform 0.5s ease-in-out;
     width: 100%;
     max-width: 800px;
@@ -1089,7 +1088,7 @@ a, button, input {
 }
 
 .testimonial-item {
-    min-width: 100%; /* Ogni item occupa tutta la larghezza del carousel */
+    min-width: 100%; 
     box-sizing: border-box;
     padding: 30px;
     display: flex;
@@ -1144,10 +1143,9 @@ a, button, input {
 }
 
 html {
-    scroll-behavior: smooth; /* Questo già lo avevi, è fondamentale */
+    scroll-behavior: smooth; 
 }
 
-/* Opzionale: Transizione del colore di sfondo del body per un effetto più morbido */
 body {
     transition: background 0.5s ease-in-out, color 0.5s ease-in-out;
 }
@@ -1159,11 +1157,10 @@ body {
     padding: 20px 0;
 }
 
-/* La linea verticale centrale */
 .timeline::before {
     content: '';
     position: absolute;
-    left: 20px; /* Spostato a sinistra per design pulito su mobile */
+    left: 20px; 
     top: 0;
     bottom: 0;
     width: 2px;
@@ -1174,13 +1171,12 @@ body {
 .timeline-item {
     position: relative;
     margin-bottom: 50px;
-    padding-left: 60px; /* Spazio per la linea */
+    padding-left: 60px; 
 }
 
-/* Il pallino sulla linea */
 .timeline-dot {
     position: absolute;
-    left: 11px; /* Centrato sulla linea */
+    left: 11px; 
     top: 0;
     width: 20px;
     height: 20px;
@@ -1205,43 +1201,40 @@ body {
 }
 
 .timeline-content {
-    /* Usa lo stile delle tue glass-card esistenti */
     padding: 20px;
     transition: 0.3s;
 }
 
 .timeline-item:hover .timeline-content {
-    transform: translateX(10px); /* Leggero movimento a destra */
+    transform: translateX(10px); 
 }
 
 .profile-photo-container {
-    position: relative; /* Fondamentale per posizionare il pallino */
+    position: relative; 
     display: inline-block;
 }
 
 .status-indicator {
     position: absolute;
-    bottom: 15px; /* Aggiusta in base alla tua foto */
+    bottom: 15px; 
     right: 15px;
     width: 20px;
     height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: help; /* Cambia cursore al passaggio */
+    cursor: help; 
 }
 
-/* Il pallino verde fisso */
 .status-dot {
     width: 12px;
     height: 12px;
-    background-color: #27c93f; /* Verde brillante */
+    background-color: #27c93f; 
     border-radius: 50%;
     z-index: 2;
-    border: 2px solid #0d0d2b; /* Bordo scuro per stacco */
+    border: 2px solid #0d0d2b; 
 }
 
-/* L'anello che pulsa */
 .status-ring {
     position: absolute;
     width: 100%;
@@ -1257,50 +1250,42 @@ body {
     100% { transform: scale(2.5); opacity: 0; }
 }
 
-/* --- STILE DI STAMPA (MEDIA QUERY PRINT) --- */
 @media print {
-    /* Nascondi tutto ciò che è inutile su carta */
     .theme-toggle, .scroll-progress, .cursor-dot, .cursor-outline, 
     .social-sidebar, .floating-contact, .noise-overlay, 
     .terminal-window, .waves, .background-shapes, .to-top, video, canvas {
         display: none !important;
     }
 
-    /* Reset colori per risparmio inchiostro */
     body {
         background: #fff !important;
         color: #000 !important;
-        font-family: 'Times New Roman', serif; /* Più leggibile su carta */
+        font-family: 'Times New Roman', serif; 
     }
 
-    /* Rendi le card semplici riquadri di testo */
     .glass-card, .project-item, .timeline-content {
         background: none !important;
         border: none !important;
         box-shadow: none !important;
         color: #000 !important;
-        page-break-inside: avoid; /* Evita che una card venga tagliata a metà pagina */
+        page-break-inside: avoid; 
         border-bottom: 1px solid #ccc !important;
         margin-bottom: 20px;
     }
 
-    /* Forza il colore dei testi che erano bianchi */
     h1, h2, h3, p, span {
         color: #000 !important;
         text-shadow: none !important;
     }
 
-    /* Mostra i link per esteso (utile su carta) */
     a::after {
         content: " (" attr(href) ")";
         font-size: 0.8rem;
         color: #555;
     }
     
-    /* Nascondi link menu che non servono */
     nav a::after { content: ""; } 
 
-    /* La timeline diventa una lista semplice */
     .timeline::before, .timeline-dot {
         display: none;
     }
@@ -1311,14 +1296,13 @@ body {
 
 .glitch-name {
     position: relative;
-    font-size: 3.5rem; /* O la dimensione che preferisci */
+    font-size: 3.5rem; 
     font-weight: 800;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 2px;
 }
 
-/* Crea due copie del testo sovrapposte */
 .glitch-name::before,
 .glitch-name::after {
     content: attr(data-text);
@@ -1327,10 +1311,9 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #020c1b; /* Stesso colore dello sfondo per nascondere parti */
+    background: #020c1b; 
 }
 
-/* La copia Ciano */
 .glitch-name::before {
     left: 2px;
     text-shadow: -1px 0 #00dbde;
@@ -1338,7 +1321,6 @@ body {
     animation: glitch-anim 5s infinite linear alternate-reverse;
 }
 
-/* La copia Rosa */
 .glitch-name::after {
     left: -2px;
     text-shadow: -1px 0 #fc00ff;
@@ -1346,7 +1328,6 @@ body {
     animation: glitch-anim2 5s infinite linear alternate-reverse;
 }
 
-/* Animazioni Keyframes per il movimento casuale */
 @keyframes glitch-anim {
     0% { clip: rect(12px, 9999px, 5px, 0); }
     5% { clip: rect(65px, 9999px, 89px, 0); }
@@ -1354,7 +1335,6 @@ body {
     15% { clip: rect(23px, 9999px, 56px, 0); }
     20% { clip: rect(4px, 9999px, 87px, 0); }
     25% { clip: rect(67px, 9999px, 3px, 0); }
-    /* ... puoi aggiungere altri step per più caos ... */
     100% { clip: rect(12px, 9999px, 67px, 0); }
 }
 
@@ -1368,7 +1348,7 @@ body {
 }
 
 .context-menu {
-    display: none; /* Nascosto di default */
+    display: none; 
     position: absolute;
     z-index: 10000;
     width: 200px;
@@ -1396,7 +1376,7 @@ body {
 .context-item:hover {
     background: rgba(0, 219, 222, 0.2);
     color: #00dbde;
-    padding-left: 25px; /* Piccolo movimento a destra */
+    padding-left: 25px; 
 }
 
 .separator {
@@ -1415,11 +1395,10 @@ body {
     padding-left: 20px;
 }
 
-/* Classe che aggiungeremo via JS */
 .glass-card.active-card, 
 .project-item.active-card, 
 .cert-item.active-card {
     border-color: #00dbde;
     box-shadow: 0 0 20px rgba(0, 219, 222, 0.4);
-    transform: scale(1.02); /* Leggero zoom */
+    transform: scale(1.02); 
 }
