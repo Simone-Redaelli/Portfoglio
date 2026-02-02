@@ -1,3 +1,6 @@
+/* =========================================
+   RESET E BASE
+   ========================================= */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
@@ -14,8 +17,123 @@ body {
     align-items: center;
     padding-top: 80px; 
     padding-bottom: 60px;
+    /* Gestione cursore personalizzato */
+    cursor: none;
+    transition: background 0.5s ease-in-out, color 0.5s ease-in-out;
 }
 
+/* =========================================
+   NAVBAR & MENU DESKTOP
+   ========================================= */
+:root {
+    --nav-text: #aaaaaa;       
+    --nav-text-active: #ffffff; 
+    --nav-border: #ffffff;     
+    --toggle-color: #ffffff;   
+}
+
+body.light-mode {
+    --nav-text: #555555;
+    --nav-text-active: #000000;
+    --nav-border: #000000;
+    --toggle-color: #000000;
+    background-color: #f4f4f4; 
+}
+
+nav {
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    width: 100%;
+    padding: 20px 50px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000; 
+    background-color: transparent;
+    backdrop-filter: blur(15px); 
+    -webkit-backdrop-filter: blur(15px); 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+    transition: 0.3s;
+}
+
+body.light-mode nav {
+    background: rgba(244, 244, 244, 0.8); 
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo span { 
+    color: var(--nav-text-active);
+    transition: color 0.3s;
+}
+
+.logo-sr { 
+    border: 2px solid var(--nav-border); 
+    color: var(--nav-text-active);
+    padding: 5px 10px; 
+    font-style: italic;
+    transition: 0.3s;
+}
+
+.menu {
+    position: absolute;        
+    left: 50%;                 
+    transform: translateX(-50%); 
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    margin: 0; 
+    padding: 0;
+}
+
+.menu a {
+    text-decoration: none;
+    color: var(--nav-text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.menu a:hover, .menu a.active {
+    color: var(--nav-text-active);
+}
+
+/* Icona Hamburger (nascosta su Desktop) */
+.hamburger {
+    display: none;
+}
+
+/* Extra Nav (Cerca e Tema) */
+.nav-extras {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#theme-toggle {
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: var(--toggle-color);
+    transition: transform 0.4s ease, color 0.3s;
+    margin-left: 30px; 
+}
+
+#theme-toggle:hover {
+    transform: rotate(20deg) scale(1.2); 
+}
+
+/* =========================================
+   DROPDOWN MENU
+   ========================================= */
 .menu-container {
     position: fixed;
     top: 20px;
@@ -62,7 +180,6 @@ body {
     display: block;
     font-size: 14px;
     transition: 0.3s;
-    transition: all 0.3s ease 0.5s;
 }
 
 .dropdown-content a:hover {
@@ -81,6 +198,9 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* =========================================
+   TESTI E TITOLI
+   ========================================= */
 h1 {
     font-size: 2.5rem;
     font-weight: 600;
@@ -109,6 +229,9 @@ h2 {
     padding-bottom: 5px;
 }
 
+/* =========================================
+   CARTE E EFFETTI GLASS
+   ========================================= */
 .glass-card {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
@@ -126,6 +249,7 @@ h2 {
     transform: translateY(-5px); 
 }
 
+/* Skills */
 table { width: 100%; }
 td { font-size: 1.1rem; line-height: 1.8; color: #e0e0e0; text-align: justify; }
 b { color: #009dff; font-weight: 600; }
@@ -160,7 +284,10 @@ b { color: #009dff; font-weight: 600; }
 .glass-card:hover .sql-fill { width: 70%; }
 .glass-card:hover .office-fill { width: 90%}
 
-projects-grid {
+/* =========================================
+   PROGETTI E GRIGLIE
+   ========================================= */
+.projects-grid { /* CORRETTO: Aggiunto il punto */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
@@ -188,42 +315,7 @@ projects-grid {
     color: #ccc;
 }
 
-footer {
-    margin-top: 60px;
-    text-align: center;
-    padding: 20px;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(5px);
-}
-.social-links a {
-    color: #ffffff;
-    margin: 0 15px;
-    font-size: 1.5rem;
-    text-decoration: none;
-    transition: 0.3s;
-}
-.social-links a:hover {
-    color: #00dbde;
-    text-shadow: 0 0 15px #00dbde;
-}
-.typewriter {
-    display: inline-block;
-    overflow: hidden; 
-    border-right: 3px solid #00dbde; 
-    white-space: nowrap; 
-    margin: 0 auto;
-    letter-spacing: 2px;
-    animation: 
-        typing 3.5s steps(40, end),
-        blink-caret .75s step-end infinite; 
-}   
-
-@keyframes typing {
-    from { width: 0 }
-    to { width: 100% }
-}
-
+/* Certificazioni */
 .cert-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
@@ -275,7 +367,70 @@ footer {
     font-size: 0.85rem;
     color: #ccc;
 }
-    cursor-outline {
+
+/* =========================================
+   FOOTER E SOCIAL
+   ========================================= */
+footer {
+    margin-top: 60px;
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+}
+.social-links a {
+    color: #ffffff;
+    margin: 0 15px;
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.social-links a:hover {
+    color: #00dbde;
+    text-shadow: 0 0 15px #00dbde;
+}
+
+/* =========================================
+   ANIMAZIONI E TYPEWRITER
+   ========================================= */
+.typewriter {
+    display: inline-block;
+    overflow: hidden; 
+    border-right: 3px solid #00dbde; 
+    white-space: nowrap; 
+    margin: 0 auto;
+    letter-spacing: 2px;
+    animation: 
+        typing 3.5s steps(40, end),
+        blink-caret .75s step-end infinite; 
+}   
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+/* =========================================
+   CURSORE PERSONALIZZATO
+   ========================================= */
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #00dbde;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 9999;
+    pointer-events: none; 
+}
+
+.cursor-outline { /* CORRETTO: Aggiunto il punto */
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(0, 219, 222, 0.5);
     position: fixed;
     top: 0;
     left: 0;
@@ -283,125 +438,16 @@ footer {
     border-radius: 50%;
     z-index: 9999;
     pointer-events: none;
+    transition: width 0.2s, height 0.2s; 
 }
 
-.cursor-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #00dbde;
+a, button, input {
+    cursor: pointer; 
 }
 
-.cursor-outline {
-    width: 40px;
-    height: 40px;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    transition: width 0.2s, height 0.2s, background-color 0.2s;
-}
-
-:root {
-    --nav-text: #aaaaaa;       
-    --nav-text-active: #ffffff; 
-    --nav-border: #ffffff;     
-    --toggle-color: #ffffff;   
-}
-
-body.light-mode {
-    --nav-text: #555555;
-    --nav-text-active: #000000;
-    --nav-border: #000000;
-    --toggle-color: #000000;
-    background-color: #f4f4f4; 
-}
-
-nav {
-    position: fixed; 
-    top: 0; 
-    left: 0;
-    width: 100%;
-    
-    padding: 20px 50px; 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 1000; 
-    
-    background-color: transparent;
-    backdrop-filter: blur(15px); 
-    -webkit-backdrop-filter: blur(15px); 
-    
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
-    transition: 0.3s;
-    
-}
-
-body.light-mode nav {
-    background: rgba(244, 244, 244, 0.8); 
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo span { 
-    color: var(--nav-text-active);
-    transition: color 0.3s;
-}
-
-.logo-sr { 
-    border: 2px solid var(--nav-border); 
-    color: var(--nav-text-active);
-    padding: 5px 10px; 
-    font-style: italic;
-    transition: 0.3s;
-}
-
-.menu {
-    position: absolute;        
-    left: 50%;                 
-    transform: translateX(-50%); 
-    
-    display: flex;
-    gap: 30px;
-    list-style: none;
-    margin: 0; 
-    padding: 0;
-}
-
-.menu a {
-    text-decoration: none;
-    color: var(--nav-text);
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: 0.3s;
-}
-
-.menu a:hover, .menu a.active {
-    color: var(--nav-text-active);
-}
-
-#theme-toggle {
-    font-size: 1.3rem;
-    cursor: pointer;
-    color: var(--toggle-color);
-    transition: transform 0.4s ease, color 0.3s;
-    margin-left: 30px; 
-}
-
-#theme-toggle:hover {
-    transform: rotate(20deg) scale(1.2); 
-}
-
-@media (max-width: 768px) {
-    nav { padding: 20px; }
-    .menu { display: none; } 
-}
-
+/* =========================================
+   SEZIONE CONTATTI
+   ========================================= */
 #contatti-section {
     width: 100%;
     padding: 60px 20px;
@@ -558,6 +604,9 @@ body.light-mode nav {
     width: 100%;
 }
 
+/* =========================================
+   HERO SECTION
+   ========================================= */
 .hero-section {
     display: flex;
     align-items: center; 
@@ -593,31 +642,14 @@ body.light-mode nav {
     max-width: 600px;
 }
 
-@media (max-width: 900px) {
-    .hero-section {
-        flex-direction: column; 
-        text-align: center; 
-        gap: 40px;
-    }
-
-    .profile-img-container {
-        width: 250px; 
-        height: 250px;
-    }
-
-    .hero-text-container div[style*="display: flex"] {
-        justify-content: center;
-    }
-    .btn-cv {
-        margin-right: 0; 
-    }
-}
-
 @keyframes pulse-border {
     from { box-shadow: 0 0 30px rgba(0, 219, 222, 0.3); }
     to { box-shadow: 0 0 60px rgba(252, 0, 255, 0.5); }
 }
 
+/* =========================================
+   SEARCH & INTERFACCIA
+   ========================================= */
 .search-box {
     display: flex;
     align-items: center;
@@ -674,12 +706,6 @@ body.light-mode nav {
     border-radius: 4px;
 }
 
-@media (max-width: 900px) {
-    .search-box {
-        display: none; 
-    }
-}
-
 .highlight-text {
     background-color: #00dbde; 
     color: #0d0d2b;            
@@ -706,6 +732,7 @@ body.light-mode nav {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
 }
+
 #backToTop {
     position: fixed;
     bottom: 30px;
@@ -727,6 +754,9 @@ body.light-mode nav {
     box-shadow: 0 0 15px #00dbde;
 }
 
+/* =========================================
+   STATS SECTION
+   ========================================= */
 .stats-section {
     width: 100%;
     display: flex;
@@ -789,12 +819,9 @@ body.light-mode nav {
     letter-spacing: 1px;
 }
 
-@media (max-width: 768px) {
-    .stats-container {
-        flex-direction: column;
-        gap: 50px;
-    }
-}
+/* =========================================
+   BACKGROUND FX
+   ========================================= */
 .background-shapes {
     position: fixed;
     top: 0;
@@ -857,6 +884,9 @@ body.light-mode nav {
     background: #00dbde; 
 }
 
+/* =========================================
+   TECH STACK
+   ========================================= */
 .tech-stack-section {
     padding: 50px 20px;
     display: flex;
@@ -885,7 +915,6 @@ body.light-mode nav {
     justify-content: center;
     transition: 0.5s;
     backdrop-filter: blur(5px);
-    
     animation: floating 3s ease-in-out infinite;
 }
 
@@ -926,41 +955,9 @@ body.light-mode nav {
     100% { transform: translateY(0px); }  
 }
 
-.cursor-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #00dbde;
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 9999;
-    pointer-events: none; 
-}
-
-.cursor-outline {
-    width: 40px;
-    height: 40px;
-    border: 2px solid rgba(0, 219, 222, 0.5);
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 9999;
-    pointer-events: none;
-    transition: width 0.2s, height 0.2s; 
-}
-
-body {
-    cursor: none;
-}
-
-a, button, input {
-    cursor: pointer; 
-}
-
+/* =========================================
+   PRELOADER & TERMINAL
+   ========================================= */
 #preloader {
     position: fixed;
     top: 0;
@@ -1027,52 +1024,54 @@ a, button, input {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     font-family: 'Courier New', monospace;
     overflow: hidden;
-  }
-  
-  .terminal-header {
+}
+
+.terminal-header {
     background-color: #1a1a3d;
     padding: 10px;
     display: flex;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .terminal-controls {
+}
+
+.terminal-controls {
     display: flex;
     gap: 8px;
-  }
-  
-  .control { width: 12px; height: 12px; border-radius: 50%; }
-  .close { background-color: #ff5f56; }
-  .minimize { background-color: #ffbd2e; }
-  .maximize { background-color: #27c93f; }
-  
-  .terminal-title {
+}
+
+.control { width: 12px; height: 12px; border-radius: 50%; }
+.close { background-color: #ff5f56; }
+.minimize { background-color: #ffbd2e; }
+.maximize { background-color: #27c93f; }
+
+.terminal-title {
     color: #aaa;
     font-size: 0.8rem;
     margin-left: 20px;
-  }
-  
-  .terminal-content {
+}
+
+.terminal-content {
     padding: 20px;
     color: #fff;
-  }
-  
-  .text { margin: 5px 0; font-size: 0.9rem; }
-  .command { color: #00dbde; }
-  .success { color: #27c93f; }
-  
-  .blink {
+}
+
+.text { margin: 5px 0; font-size: 0.9rem; }
+.command { color: #00dbde; }
+.success { color: #27c93f; }
+
+.blink {
     animation: blink-anim 1s infinite;
-  }
-  
-  @keyframes blink-anim {
+}
+
+@keyframes blink-anim {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
-  }
+}
 
-
-  .testimonials-section {
+/* =========================================
+   TESTIMONIALS
+   ========================================= */
+.testimonials-section {
     padding: 80px 20px;
     text-align: center;
     overflow: hidden; 
@@ -1142,14 +1141,9 @@ a, button, input {
     box-shadow: 0 0 8px #00dbde;
 }
 
-html {
-    scroll-behavior: smooth; 
-}
-
-body {
-    transition: background 0.5s ease-in-out, color 0.5s ease-in-out;
-}
-
+/* =========================================
+   TIMELINE
+   ========================================= */
 .timeline {
     position: relative;
     max-width: 800px;
@@ -1209,6 +1203,9 @@ body {
     transform: translateX(10px); 
 }
 
+/* =========================================
+   PROFILO E STATUS
+   ========================================= */
 .profile-photo-container {
     position: relative; 
     display: inline-block;
@@ -1250,6 +1247,9 @@ body {
     100% { transform: scale(2.5); opacity: 0; }
 }
 
+/* =========================================
+   PRINT STYLES
+   ========================================= */
 @media print {
     .theme-toggle, .scroll-progress, .cursor-dot, .cursor-outline, 
     .social-sidebar, .floating-contact, .noise-overlay, 
@@ -1294,6 +1294,9 @@ body {
     }
 }
 
+/* =========================================
+   GLITCH EFFECT
+   ========================================= */
 .glitch-name {
     position: relative;
     font-size: 3.5rem; 
@@ -1347,6 +1350,9 @@ body {
     100% { clip: rect(45px, 9999px, 12px, 0); }
 }
 
+/* =========================================
+   CONTEXT MENU & ACTIVE CARD
+   ========================================= */
 .context-menu {
     display: none; 
     position: absolute;
@@ -1401,4 +1407,96 @@ body {
     border-color: #00dbde;
     box-shadow: 0 0 20px rgba(0, 219, 222, 0.4);
     transform: scale(1.02); 
+}
+
+
+/* =========================================
+   MEDIA QUERY: MOBILE / TABLET (FIX MENU)
+   ========================================= */
+@media screen and (max-width: 900px) {
+    .hero-section {
+        flex-direction: column; 
+        text-align: center; 
+        gap: 40px;
+    }
+
+    .profile-img-container {
+        width: 250px; 
+        height: 250px;
+    }
+
+    .hero-text-container div[style*="display: flex"] {
+        justify-content: center;
+    }
+    
+    .search-box {
+        display: none; 
+    }
+    
+    .stats-container {
+        flex-direction: column;
+        gap: 50px;
+    }
+}
+
+/* =========================================
+   MEDIA QUERIES (PER CELLULARI E TABLET)
+   ========================================= */
+@media screen and (max-width: 768px) {
+    
+    /* 1. Modifichiamo il layout della NAV per il mobile */
+    nav {
+        padding: 15px 20px; /* Riduciamo il padding */
+        background-color: rgba(2, 12, 27, 0.95); /* Sfondo più scuro per leggere meglio */
+    }
+
+    /* 2. Mostriamo l'Hamburger Icon */
+    .hamburger {
+        display: block; /* Ora si vede! */
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--toggle-color);
+        z-index: 1001; /* Sopra al menu */
+    }
+
+    /* 3. Nascondiamo e stilizziamo il menu lista */
+    .menu {
+        position: fixed;
+        top: 0;
+        right: -100%; /* Nascondiamo il menu fuori dallo schermo a destra */
+        left: auto; /* Resettiamo il left del desktop */
+        width: 70%; /* Larghezza del menu laterale */
+        height: 100vh;
+        background-color: #0a2e4e; /* Colore sfondo menu */
+        flex-direction: column; /* Link uno sotto l'altro */
+        justify-content: center;
+        align-items: center;
+        transform: none; /* Rimuoviamo il centra-menu del desktop */
+        transition: 0.4s ease; /* Animazione fluida */
+        box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+        z-index: 1000;
+    }
+
+    /* 4. Classe ACTIVE: Cosa succede quando clicchi l'hamburger */
+    .menu.active {
+        right: 0; /* Il menu entra nello schermo */
+    }
+
+    /* Stile dei link nel menu mobile */
+    .menu li {
+        margin: 20px 0;
+    }
+
+    .menu a {
+        font-size: 1.2rem; /* Testo più grande su mobile */
+        color: #fff;
+    }
+
+    /* 5. Gestione extra (Cerca e Tema) su mobile */
+    /* Spesso conviene nascondere la barra di ricerca su mobile o rimpicciolirla */
+    .nav-extras {
+        display: none; /* Nascondi ricerca su mobile per fare spazio (opzionale) */
+    }
+    
+    /* Se vuoi tenere il cambio tema, spostalo fuori da .nav-extras o gestiscilo diversamente */
 }

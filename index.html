@@ -34,24 +34,28 @@
         <span>Simone Redaelli</span>
     </div>
 
-    <ul class="menu">
-        <li><a href="#inizio" class="active">Home.</a></li>
-        <li><a href="#primi">Su di me</a></li>
-        <li><a href="#skills">Skills</a></li>
-        <li><a href="#progetti">Portfolio</a></li>
-        <li><a href="#certificati">Certificazioni</a></li>
-        <li><a href="#contatti">Contatti</a></li>
-    </ul>
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Cerca nel sito...">
-        <button onclick="searchInPage()">
-            <i class="fas fa-search"></i>
-        </button>
+    <div class="hamburger" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
     </div>
 
-  
+    <ul class="menu" id="mobileMenu">
+        <li><a href="#inizio" onclick="toggleMenu()">Home.</a></li>
+        <li><a href="#primi" onclick="toggleMenu()">Su di me.</a></li>
+        <li><a href="#skills" onclick="toggleMenu()">Skills</a></li>
+        <li><a href="#progetti" onclick="toggleMenu()">Portfolio</a></li>
+        <li><a href="#certificati" onclick="toggleMenu()">Certificazioni</a></li>
+        <li><a href="#contatti" onclick="toggleMenu()">Contatti</a></li>
+    </ul>
 
-    <i class="fas fa-moon" id="theme-toggle"></i>
+    <div class="nav-extras">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Cerca...">
+            <button onclick="searchInPage()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <i class="fas fa-moon" id="theme-toggle"></i>
+    </div>
 </nav>
 
 <div id="inizio"></div>
@@ -385,18 +389,6 @@
             <p class="footer-copyright">© 2024 Simone Redaelli - 5A SIA</p>
         </div>
     </section>
-    <button id="backToTop" onclick="scrollToTop()">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-    <div id="custom-context-menu" class="context-menu">
-        <div class="context-item" onclick="window.print()">🖨️ Stampa CV</div>
-        <div class="context-item" onclick="window.location.href='mailto:tuaemail@gmail.com'">📧 Copia Email</div>
-        <div class="context-item" onclick="window.open('https://github.com/tuousername', '_blank')">🐙 GitHub Profile</div>
-        <div class="separator"></div>
-        <div class="context-item disabled">Console: Ready</div>
-        <div class="context-item disabled">Ping: 14ms</div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <script>
         window.addEventListener('scroll', reveal);
     
@@ -703,25 +695,29 @@ function scrollToTop() {
         });
     });
 </script>
+
 <script>
-    const contextMenu = document.getElementById('custom-context-menu');
-    const scope = document.querySelector('body');
-
-    scope.addEventListener('contextmenu', (event) => {
-        event.preventDefault(); // Blocca il menu standard
+    function toggleMenu() {
+        const menu = document.getElementById('mobileMenu');
+        const icon = document.querySelector('.hamburger i');
         
-        const { clientX: mouseX, clientY: mouseY } = event;
-        
-        contextMenu.style.top = `${mouseY}px`;
-        contextMenu.style.left = `${mouseX}px`;
-        contextMenu.style.display = 'block';
-    });
+       
+        menu.classList.toggle('active');
 
-    // Chiudi il menu se clicchi ovunque
-    scope.addEventListener('click', () => {
-        contextMenu.style.display = 'none';
-    });
+        
+        if (menu.classList.contains('active')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+            document.body.style.overflow = 'hidden'; 
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+            document.body.style.overflow = 'auto'; 
+        }
+    }
 </script>
+
+
 
 
 
@@ -729,4 +725,3 @@ function scrollToTop() {
 
 </body>
 </html>
-
