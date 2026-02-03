@@ -160,6 +160,11 @@
         </p>
 
         <div class="cards-grid">
+            <a href="servizio.html" class="feature-card">
+                <i class="fa-solid fa-id-card-clip card-icon"></i>
+                <div class="card-title">Badge Servizio</div>
+                <div class="card-desc">Entra/Esci dal turno e traccia le ore</div>
+            </a>
             <a href="analytics.html" class="feature-card">
                 <i class="fa-solid fa-chart-line"></i>
                 <h3>Stato Progetti</h3>
@@ -170,12 +175,6 @@
                 <i class="fa-solid fa-comments"></i>
                 <h3>Messaggi</h3>
                 <p>Chat diretta con l'amministrazione.</p>
-            </a>
-            
-            <a href="admin.html" class="feature-card" style="border-color: rgba(255, 107, 107, 0.3);">
-                <i class="fa-solid fa-users-gear" style="color: #ff6b6b;"></i>
-                <h3 style="color: #ff6b6b;">Amministrazione</h3>
-                <p>Crea utenti, gestisci ruoli e permessi.</p>
             </a>
             <a href="gerarchia.html" class="feature-card">
                 <i class="fa-solid fa-sitemap" style="color: #ffffff;"></i>
@@ -220,7 +219,17 @@
                 </div>
                 <div class="card-title">Codice Fiscale</div>
                 <div class="card-desc">Calcolatore rapido per pazienti</div>
-            </a>  
+            </a> 
+            <a href="admin.html" class="feature-card" style="border-color: rgba(255, 107, 107, 0.3);">
+                <i class="fa-solid fa-users-gear" style="color: #ff6b6b;"></i>
+                <h3 style="color: #ff6b6b;">Amministrazione</h3>
+                <p>Crea utenti, gestisci ruoli e permessi.</p>
+            </a> 
+            <a href="gestione_ore.html" class="feature-card" style="border-color: #f1c40f;">
+                <i class="fa-solid fa-users-gear card-icon" style="color: #f1c40f;"></i>
+                <div class="card-title">Gestione Ore</div>
+                <div class="card-desc">Admin: Modifica ore medici e reset</div>
+            </a>
             
 </div>
         </div>
@@ -314,5 +323,6 @@
             console.error("ERRORE: Bottone Logout non trovato.");
         }
     </script>
+    <script src="logger.js"></script>
 </body>
 </html>

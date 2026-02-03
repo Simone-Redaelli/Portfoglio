@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archivio Referti - Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        /* STILE DASHBOARD */
+        /* STILE DASHBOARD - IDENTICO A PRIMA */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #0a192f; color: #ccd6f6; min-height: 100vh; padding: 40px; }
 
@@ -27,13 +28,12 @@
         .category-card:hover { transform: translateY(-7px); border-color: #64ffda; }
         .icon-box { font-size: 2.5rem; color: #64ffda; margin-bottom: 20px; background: rgba(100, 255, 218, 0.1); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .cat-title { font-size: 1.4rem; font-weight: 600; color: #e6f1ff; margin-bottom: 10px; }
-        .cat-desc { font-size: 0.9rem; color: #8892b0; }
         .count-badge { margin-top: 15px; background: #233554; padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; color: #fff; }
 
         .add-new-card { border: 2px dashed #64ffda; background: transparent; }
         .add-new-card .icon-box { background: transparent; border: 2px solid #64ffda; }
 
-        /* MODAL */
+        /* MODAL LISTA */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(2, 12, 27, 0.9); z-index: 1000; justify-content: center; align-items: center;
@@ -53,8 +53,21 @@
         }
         .file-info h4 { color: #e6f1ff; margin-bottom: 5px; }
         .file-info p { font-size: 0.8rem; color: #8892b0; }
-        .file-action { color: #64ffda; font-size: 1.2rem; cursor: pointer; }
-        .file-action:hover { color: #fff; }
+        
+        .actions-group { display: flex; gap: 15px; align-items: center; }
+        .btn-action { font-size: 1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
+        .btn-view { color: #64ffda; }
+        .btn-view:hover { color: #fff; text-shadow: 0 0 5px #64ffda; }
+        .btn-delete { color: #e74c3c; } 
+        .btn-delete:hover { color: #ffadad; text-shadow: 0 0 5px #e74c3c; }
+
+        /* PERSONALIZZAZIONE SWEETALERT (Per farlo scuro) */
+        div:where(.swal2-container) div:where(.swal2-popup) {
+            background: #112240 !important;
+            border: 1px solid #233554;
+            color: #e6f1ff;
+        }
+        div:where(.swal2-container) .swal2-title { color: #64ffda !important; }
     </style>
 </head>
 <body>
@@ -101,16 +114,18 @@
         <div class="modal-content">
             <i class="fa-solid fa-times close-modal" onclick="chiudiModal()"></i>
             <h2 id="modalTitle" style="color:#64ffda; margin-bottom:10px;">Titolo Categoria</h2>
-            
             <div class="file-list" id="listaReferti"></div>
         </div>
     </div>
 
     <script>
-        // Carica dati
-        const archivio = JSON.parse(localStorage.getItem('archivioReferti')) || [];
+        let catCorrente = '';
+        let titoloCorrente = '';
+
+        function getArchivio() { return JSON.parse(localStorage.getItem('archivioReferti')) || []; }
 
         function aggiornaContatori() {
+            const archivio = getArchivio();
             ['ematici', 'radiologia', 'visite', 'verbali', 'certificati'].forEach(cat => {
                 const count = archivio.filter(r => r.categoria === cat).length;
                 const el = document.getElementById('count-' + cat);
@@ -120,9 +135,12 @@
         aggiornaContatori();
 
         function apriLista(categoria, titoloBella) {
+            catCorrente = categoria;
+            titoloCorrente = titoloBella;
             const modal = document.getElementById('modalView');
             const listaDiv = document.getElementById('listaReferti');
             const titolo = document.getElementById('modalTitle');
+            const archivio = getArchivio();
 
             modal.style.display = 'flex';
             titolo.innerText = titoloBella;
@@ -135,29 +153,65 @@
                 return;
             }
 
-            refertiCategoria.forEach(ref => {
+            refertiCategoria.reverse().forEach(ref => {
                 const item = document.createElement('div');
                 item.className = 'file-item';
-                // Notare l'onclick che chiama apriRefertoCompleto() invece dell'alert
                 item.innerHTML = `
                     <div class="file-info">
                         <h4><i class="fa-solid fa-file-pdf" style="color:#e74c3c; margin-right:8px;"></i> ${ref.nome} ${ref.cognome}</h4>
                         <p>Data: ${ref.dataCreazione} | Dr. ${ref.doc_cognome || 'N/D'}</p>
                     </div>
-                    <div class="file-action" onclick="apriRefertoCompleto(${ref.id})" title="Visualizza Documento">
-                        <i class="fa-solid fa-eye"></i> Visualizza
+                    <div class="actions-group">
+                        <div class="btn-action btn-view" onclick="apriRefertoCompleto(${ref.id})" title="Visualizza">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <div class="btn-action btn-delete" onclick="eliminaReferto(${ref.id})" title="Elimina definitivamente">
+                            <i class="fa-solid fa-trash"></i>
+                        </div>
                     </div>
                 `;
                 listaDiv.appendChild(item);
             });
         }
 
-        // --- FUNZIONE PER APRIRE LA PAGINA VISUALIZZA.HTML ---
         function apriRefertoCompleto(id) {
-            // Salviamo l'ID che vogliamo vedere nella memoria temporanea
             localStorage.setItem('refertoDaVisualizzare', id);
-            // Andiamo alla pagina di visualizzazione
             window.location.href = 'visualizza.html';
+        }
+
+        // --- FUNZIONE ELIMINA CON NOTIFICA BELLA ---
+        function eliminaReferto(id) {
+            Swal.fire({
+                title: 'Sei sicuro?',
+                text: "Non potrai recuperare questo referto una volta eliminato!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#233554',
+                confirmButtonText: 'Sì, elimina!',
+                cancelButtonText: 'Annulla'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Procedura di eliminazione reale
+                    let archivio = getArchivio();
+                    const nuovoArchivio = archivio.filter(r => r.id != id);
+                    localStorage.setItem('archivioReferti', JSON.stringify(nuovoArchivio));
+                    registraLog("Eliminazione Referto ID: " + id, "Attenzione");
+
+                    // Aggiorna interfaccia
+                    aggiornaContatori();
+                    apriLista(catCorrente, titoloCorrente);
+
+                    // Notifica successo
+                    Swal.fire({
+                        title: 'Eliminato!',
+                        text: 'Il file è stato rimosso dall\'archivio.',
+                        icon: 'success',
+                        confirmButtonColor: '#64ffda',
+                        confirmButtonText: 'Ok'
+                    });
+                }
+            });
         }
 
         function chiudiModal() {
@@ -167,5 +221,6 @@
             if (event.target == document.getElementById('modalView')) chiudiModal();
         }
     </script>
+    <script src="logger.js"></script>
 </body>
 </html>

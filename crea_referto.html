@@ -234,6 +234,70 @@
         }
 
         // --- SALVATAGGIO COMPLETO ---
+        // --- FUNZIONE INVIO DISCORD ---
+function inviaLogDiscord(dati) {
+    // 1. INSERISCI QUI IL TUO LINK WEBHOOK DI DISCORD
+    const webhookURL = "https://discord.com/api/webhooks/1468324881610313901/IERLsPht9pJ7gqYeBu3frANw2G56DQmbv3G6-DKEka9bk10f4KzRriQ2OIBH8hYKRjBy"; 
+
+    // Formattiamo la lista esami per renderla leggibile
+    const listaEsami = dati.esami.length > 0 ? dati.esami.map(e => "• " + e).join("\n") : "Nessun esame eseguito";
+
+    // 2. Creiamo la scheda (Embed)
+    const payload = {
+        username: "Archivio Medico",
+        avatar_url: "https://i.imgur.com/vkQj2cO.png", // Icona generica medica (puoi cambiarla)
+        embeds: [
+            {
+                title: "🚑 Nuovo Referto Medico",
+                color: 13632027, // Colore Rosso (#d0021b)
+                description: "**Paziente:** " + dati.nome + " " + dati.cognome,
+                fields: [
+                    {
+                        name: "👤 Dati Paziente",
+                        value: `Nato il: ${dati.dob}\nTel: ${dati.tel}`,
+                        inline: true
+                    },
+                    {
+                        name: "👨‍⚕️ Medico Curante",
+                        value: `${dati.doc_nome} ${dati.doc_cognome}\n*${dati.grado}*`,
+                        inline: true
+                    },
+                    {
+                        name: "📋 Motivo & Diagnosi",
+                        value: `**Motivo:** ${dati.motivo}\n**Diagnosi:** ${dati.diagnosi}`
+                    },
+                    {
+                        name: "🔬 Esami Effettuati",
+                        value: listaEsami,
+                        inline: true
+                    },
+                    {
+                        name: "💊 Terapia",
+                        value: dati.farmaci || "Nessuna somministrazione",
+                        inline: true
+                    }
+                ],
+                footer: {
+                    text: "Sistema Gestionale Ospedaliero • " + dati.dataCreazione,
+                },
+                timestamp: new Date().toISOString()
+            }
+        ]
+    };
+
+
+    // 3. Inviamo i dati a Discord
+    fetch(webhookURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).then(response => {
+        console.log("Inviato a Discord!");
+    }).catch(error => {
+        console.error("Errore invio Discord:", error);
+        alert("Attenzione: Impossibile contattare Discord.");
+    });
+}
         function salvaReferto() {
             const getVal = (id) => document.getElementById(id).value;
             
@@ -262,13 +326,22 @@
 
             if(!datiCompleti.nome) { alert("Inserisci almeno il Nome del paziente."); return; }
 
+             // Salvataggio locale
             let archivio = JSON.parse(localStorage.getItem('archivioReferti')) || [];
             archivio.push(datiCompleti);
             localStorage.setItem('archivioReferti', JSON.stringify(archivio));
+            registraLog("Creazione Referto: " + datiCompleti.nome + " " + datiCompleti.cognome, "Successo");
 
-            alert("Referto Salvato in Archivio!");
+            // --- NUOVA RIGA: INVIA A DISCORD ---
+            inviaLogDiscord(datiCompleti); 
+            // -----------------------------------
+
+            alert("Referto Salvato in Archivio e inviato al Dispatch!");
             window.location.href = "referti.html";
-        }
+         }
+        
     </script>
+    <script src="logger.js"></script>
 </body>
 </html>
+

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Ore Reparto (Admin)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* --- STILE BASE (Dark/Cyber) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        
+        body {
+            background-color: #0a192f;
+            color: #ccd6f6;
+            min-height: 100vh;
+            padding: 40px;
+            background-image: radial-gradient(circle at 50% 0%, rgba(100, 255, 218, 0.1) 0%, transparent 40%);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; display: none; /* Nascosto finché non confermiamo admin */ }
+
+        /* LOADING SPINNER PER IL CHECK ADMIN */
+        #loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a192f; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+        }
+        .spinner { font-size: 3rem; color: #64ffda; margin-bottom: 20px; }
+
+        /* HEADER */
+        .header-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;
+        }
+        h1 { color: #e6f1ff; font-size: 2rem; display: flex; align-items: center; gap: 15px; }
+        .back-btn {
+            color: #64ffda; text-decoration: none; border: 1px solid #64ffda;
+            padding: 10px 20px; border-radius: 50px; transition: 0.3s;
+        }
+        .back-btn:hover { background: rgba(100, 255, 218, 0.1); }
+
+        /* --- CARD VETRO --- */
+        .glass-panel {
+            background: rgba(17, 34, 64, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* --- CONTROLLI --- */
+        .global-controls {
+            display: flex; gap: 15px; margin-bottom: 30px; padding-bottom: 20px;
+            border-bottom: 1px dashed rgba(255,255,255,0.1);
+            justify-content: flex-end;
+        }
+        .btn {
+            border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer;
+            font-weight: bold; display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+        .btn-add-all { background: rgba(100, 255, 218, 0.1); color: #64ffda; border: 1px solid #64ffda; }
+        .btn-add-all:hover { background: rgba(100, 255, 218, 0.3); }
+        .btn-reset-all { background: rgba(231, 76, 60, 0.1); color: #e74c3c; border: 1px solid #e74c3c; }
+        .btn-reset-all:hover { background: rgba(231, 76, 60, 0.3); }
+
+        /* --- TABELLA --- */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        th { text-align: left; color: #8892b0; padding: 15px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
+        tbody tr { background: rgba(255,255,255,0.03); transition: 0.2s; }
+        tbody tr:hover { background: rgba(255,255,255,0.06); transform: scale(1.005); }
+        td { padding: 15px; vertical-align: middle; color: #ccd6f6; }
+        td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; font-weight: bold; color: white; }
+        td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; text-align: right; }
+
+        .time-badge {
+            background: #112240; border: 1px solid #64ffda; color: #64ffda;
+            padding: 5px 15px; border-radius: 20px; font-family: 'Courier New', monospace; font-weight: bold;
+        }
+
+        /* Pulsanti Azione */
+        .action-btn { width: 35px; height: 35px; border-radius: 50%; border: none; cursor: pointer; margin-left: 5px; color: white; transition: 0.2s; }
+        .btn-plus { background: #2ecc71; } 
+        .btn-minus { background: #f1c40f; color: black; }
+        .btn-trash { background: #e74c3c; }
+        .btn-close-shift { background: #8e44ad; } /* VIOLA per chiusura turno */
+        
+        .action-btn:hover { transform: scale(1.1); filter: brightness(1.1); }
+
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen">
+        <i class="fa-solid fa-spinner fa-spin spinner"></i>
+        <p>Verifica permessi Admin in corso...</p>
+    </div>
+
+    <div class="container" id="admin-panel">
+        <div class="header-row">
+            <h1><i class="fa-solid fa-user-shield"></i> Pannello Admin - Ore</h1>
+            <a href="portale.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
+        </div>
+
+        <div class="glass-panel">
+            <div class="global-controls">
+                <button class="btn btn-add-all" onclick="modificaTutti(true)">
+                    <i class="fa-solid fa-circle-plus"></i> + Tutti
+                </button>
+                <button class="btn btn-add-all" onclick="modificaTutti(false)" style="border-color:#f1c40f; color:#f1c40f;">
+                    <i class="fa-solid fa-circle-minus"></i> - Tutti
+                </button>
+                <button class="btn btn-reset-all" onclick="resetTutti()">
+                    <i class="fa-solid fa-bomb"></i> RESET DB
+                </button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Medico / Operatore</th>
+                        <th>Totale Ore</th>
+                        <th style="text-align: right;">Gestione</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+
+            <div id="noData" style="text-align: center; padding: 40px; color: #8892b0; display: none;">
+                Nessun dato presente in archivio.
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // --- INSERISCI QUI LA TUA CONFIGURAZIONE FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1LnDnFa6Yr0y2ZA1BrnGhjxGW4TrNjm0",
+            authDomain: "db--medici.firebaseapp.com",
+            projectId: "db--medici",
+            storageBucket: "db--medici.firebasestorage.app",
+            messagingSenderId: "1036578434966",
+            appId: "1:1036578434966:web:f7efe660bd2a744a99b7b7",
+            measurementId: "G-SXQDDFW294"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const dbFirestore = getFirestore(app);
+
+        // --- 1. CONTROLLO SICUREZZA ADMIN ---
+        const loadingScreen = document.getElementById('loading-screen');
+        const adminPanel = document.getElementById('admin-panel');
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Lista email admin hardcoded (come backup)
+                const adminEmails = ["ciabatta12121@gmail.com", "redaellisimone720@gmail.com"];
+                let isAdmin = adminEmails.includes(user.email);
+
+                // Se non è nella lista hardcoded, controlliamo nel DB Firestore
+                if (!isAdmin) {
+                    try {
+                        const userDoc = await getDoc(doc(dbFirestore, "users", user.uid));
+                        if (userDoc.exists() && userDoc.data().ruolo === 'admin') {
+                            isAdmin = true;
+                        }
+                    } catch (e) {
+                        console.error("Errore controllo ruolo:", e);
+                    }
+                }
+
+                if (isAdmin) {
+                    // È ADMIN: Mostra il pannello
+                    loadingScreen.style.display = 'none';
+                    adminPanel.style.display = 'block';
+                    window.renderTable(); // Carica la tabella ore (definita sotto)
+                } else {
+                    // NON È ADMIN: Calcia fuori
+                    kickOut();
+                }
+            } else {
+                // NON È LOGGATO: Calcia fuori
+                kickOut();
+            }
+        });
+
+        function kickOut() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Accesso Negato',
+                text: 'Area riservata solo agli amministratori.',
+                background: '#112240', color: '#fff',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = 'index.html'; // O portale.html
+            });
+        }
+    </script>
+
+    <script>
+        // Funzioni rese globali per essere chiamate dall'HTML
+        
+        function getDatabase() {
+            return JSON.parse(localStorage.getItem('db_ore_medici')) || {};
+        }
+
+        function saveDatabase(db) {
+            localStorage.setItem('db_ore_medici', JSON.stringify(db));
+            renderTable();
+        }
+
+        function renderTable() {
+            const db = getDatabase();
+            const tbody = document.getElementById('tableBody');
+            const noData = document.getElementById('noData');
+            tbody.innerHTML = '';
+
+            const nomi = Object.keys(db);
+
+            if (nomi.length === 0) {
+                noData.style.display = 'block';
+                return;
+            } else {
+                noData.style.display = 'none';
+            }
+
+            nomi.forEach(nome => {
+                const ms = db[nome];
+                const tempoStr = msToTime(ms);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <i class="fa-solid fa-user-doctor" style="color: #64ffda; margin-right: 10px;"></i>
+                        <span style="font-weight:bold; color:#fff;">${nome}</span>
+                    </td>
+                    <td><span class="time-badge">${tempoStr}</span></td>
+                    <td>
+                        <button class="action-btn btn-plus" onclick="modificaSingolo('${nome}', true)" title="Aggiungi Tempo"><i class="fa-solid fa-plus"></i></button>
+                        <button class="action-btn btn-minus" onclick="modificaSingolo('${nome}', false)" title="Rimuovi Tempo"><i class="fa-solid fa-minus"></i></button>
+                        
+                        <button class="action-btn btn-close-shift" onclick="chiudiTurnoForzato('${nome}')" title="Chiudi Turno Dimenticato"><i class="fa-solid fa-door-closed"></i></button>
+                        
+                        <button class="action-btn btn-trash" onclick="eliminaUtente('${nome}')" title="Elimina Utente"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- NUOVA FUNZIONE: CHIUDI TURNO FORZATO ---
+        async function chiudiTurnoForzato(nome) {
+            const { value: ore } = await Swal.fire({
+                title: 'Chiudi Turno Dimenticato',
+                html: `L'utente <b>${nome}</b> ha dimenticato il turno aperto?<br>Inserisci quante ore vuoi accreditargli per chiudere il turno.`,
+                icon: 'question',
+                input: 'number',
+                inputLabel: 'Ore da aggiungere (es. 8)',
+                inputPlaceholder: 'Inserisci numero ore...',
+                showCancelButton: true,
+                confirmButtonColor: '#8e44ad',
+                confirmButtonText: 'Chiudi e Aggiungi',
+                background: '#112240', color: '#fff'
+            });
+
+            if (ore) {
+                let db = getDatabase();
+                let msDaAggiungere = parseFloat(ore) * 60 * 60 * 1000; // Converte ore in millisecondi
+                
+                if (db[nome] !== undefined) {
+                    db[nome] += msDaAggiungere;
+                    saveDatabase(db);
+                    
+                    // Opzionale: Prova a pulire eventuali flag di sessione attiva (se usano nomi standard)
+                    localStorage.removeItem(`ingresso_timestamp_${nome}`); 
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Turno Chiuso',
+                        text: `Aggiunte ${ore} ore a ${nome}.`,
+                        background: '#112240', color: '#fff',
+                        timer: 1500, showConfirmButton: false
+                    });
+                }
+            }
+        }
+
+        // Funzioni Standard (uguali a prima)
+        async function modificaSingolo(nome, isAggiunta) {
+            const azione = isAggiunta ? "Aggiungi" : "Rimuovi";
+            const { value: minuti } = await Swal.fire({
+                title: `${azione} tempo a ${nome}`,
+                input: 'number', inputLabel: 'Minuti',
+                background: '#112240', color: '#fff'
+            });
+
+            if (minuti) {
+                let ms = parseInt(minuti) * 60 * 1000;
+                let db = getDatabase();
+                if (isAggiunta) db[nome] += ms;
+                else { db[nome] -= ms; if(db[nome] < 0) db[nome] = 0; }
+                saveDatabase(db);
+            }
+        }
+
+        function eliminaUtente(nome) {
+            Swal.fire({
+                title: `Eliminare ${nome}?`,
+                text: "Non si torna indietro.",
+                icon: 'warning', showCancelButton: true,
+                confirmButtonColor: '#e74c3c', confirmButtonText: 'Elimina',
+                background: '#112240', color: '#fff'
+            }).then((r) => {
+                if (r.isConfirmed) {
+                    let db = getDatabase();
+                    delete db[nome];
+                    saveDatabase(db);
+                    Swal.fire({ icon: 'success', title: 'Eliminato', timer: 1000, showConfirmButton: false, background: '#112240', color: '#fff' });
+                }
+            });
+        }
+
+        async function modificaTutti(isAggiunta) {
+            const { value: minuti } = await Swal.fire({
+                title: isAggiunta ? 'Aggiungi a TUTTI' : 'Rimuovi a TUTTI',
+                input: 'number', inputLabel: 'Minuti',
+                background: '#112240', color: '#fff'
+            });
+            if (minuti) {
+                let ms = parseInt(minuti) * 60 * 1000;
+                let db = getDatabase();
+                Object.keys(db).forEach(n => {
+                    if(isAggiunta) db[n] += ms;
+                    else { db[n] -= ms; if(db[n] < 0) db[n] = 0; }
+                });
+                saveDatabase(db);
+            }
+        }
+
+        function resetTutti() {
+            Swal.fire({
+                title: 'RESET TOTALE',
+                text: "Cancellerai tutti i dati.",
+                icon: 'error', showCancelButton: true, confirmButtonColor: '#e74c3c',
+                background: '#112240', color: '#fff'
+            }).then((r) => {
+                if(r.isConfirmed) {
+                    localStorage.setItem('db_ore_medici', JSON.stringify({}));
+                    renderTable();
+                }
+            });
+        }
+
+        function msToTime(duration) {
+            let minutes = Math.floor((duration / (1000 * 60)) % 60);
+            let hours = Math.floor((duration / (1000 * 60 * 60)));
+            return (hours < 10 ? "0" + hours : hours) + "h " + (minutes < 10 ? "0" + minutes : minutes) + "m";
+        }
+
+        // Esponi le funzioni a window per i bottoni HTML
+        window.renderTable = renderTable;
+        window.modificaSingolo = modificaSingolo;
+        window.eliminaUtente = eliminaUtente;
+        window.chiudiTurnoForzato = chiudiTurnoForzato;
+        window.modificaTutti = modificaTutti;
+        window.resetTutti = resetTutti;
+
+    </script>
+</body>
+</html>

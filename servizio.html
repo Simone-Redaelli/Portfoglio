@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badge Servizio - EMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="logger.js"></script>
+
+    <style>
+        /* --- STILE UGUALE A PRIMA --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body {
+            background-color: #0a192f; color: #ccd6f6; height: 100vh;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            background-image: radial-gradient(circle at 50% 50%, rgba(17, 34, 64, 1) 0%, rgba(10, 25, 47, 1) 100%);
+        }
+        .back-link {
+            position: absolute; top: 30px; left: 30px; color: #64ffda; text-decoration: none; font-weight: bold;
+            border: 1px solid #64ffda; padding: 10px 20px; border-radius: 50px; transition: 0.3s;
+        }
+        .back-link:hover { background: rgba(100, 255, 218, 0.1); }
+        .badge-card {
+            background: rgba(17, 34, 64, 0.6); backdrop-filter: blur(10px); width: 400px; padding: 40px;
+            border-radius: 20px; border: 2px solid #233554; text-align: center;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6); transition: all 0.4s ease;
+        }
+        .badge-card.active-mode { border-color: #64ffda; box-shadow: 0 0 60px rgba(100, 255, 218, 0.15); }
+        .badge-header { font-size: 1.2rem; color: #8892b0; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .status-dot { width: 12px; height: 12px; border-radius: 50%; background-color: #e74c3c; box-shadow: 0 0 10px #e74c3c; transition: 0.3s; }
+        .active-mode .status-dot { background-color: #64ffda; box-shadow: 0 0 15px #64ffda; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(100, 255, 218, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(100, 255, 218, 0); } 100% { box-shadow: 0 0 0 0 rgba(100, 255, 218, 0); } }
+        .timer-display { font-size: 3.5rem; font-weight: 700; color: #e6f1ff; font-family: 'Courier New', monospace; margin: 10px 0; text-shadow: 0 0 20px rgba(230, 241, 255, 0.1); }
+        .active-mode .timer-display { color: #64ffda; text-shadow: 0 0 20px rgba(100, 255, 218, 0.6); }
+        .timer-label { font-size: 0.9rem; color: #8892b0; text-transform: uppercase; margin-bottom: 30px; }
+        .session-info { background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 15px; margin-bottom: 25px; font-size: 0.9rem; color: #a8b2d1; display: none; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .info-row span { color: #e6f1ff; font-weight: bold; }
+        .btn-action { width: 100%; padding: 18px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-start { background: transparent; border: 2px solid #64ffda; color: #64ffda; }
+        .btn-start:hover { background: rgba(100, 255, 218, 0.1); transform: translateY(-2px); }
+        .btn-stop { background: rgba(231, 76, 60, 0.1); border: 2px solid #e74c3c; color: #e74c3c; }
+        .btn-stop:hover { background: rgba(231, 76, 60, 0.2); box-shadow: 0 0 20px rgba(231, 76, 60, 0.4); }
+        .user-badge-name { margin-bottom: 10px; color: #64ffda; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <a href="portale.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Home</a>
+
+    <div class="badge-card" id="cardElement">
+        <div class="user-badge-name" id="nomeUtenteDisplay">--</div>
+        <div class="badge-header">
+            <i class="fa-solid fa-id-card-clip"></i> BADGE VIRTUALE
+            <div class="status-dot"></div>
+        </div>
+
+        <div class="timer-display" id="mainTimer">00:00:00</div>
+        <div class="timer-label">Le tue Ore Totali</div>
+
+        <div class="session-info" id="sessionBox">
+            <div class="info-row">Inizio turno: <span id="startTime">--:--</span></div>
+            <div class="info-row">Durata attuale: <span id="currentDuration">00:00:00</span></div>
+        </div>
+
+        <button class="btn-action btn-start" id="mainBtn" onclick="toggleServizio()">
+            <i class="fa-solid fa-play"></i> Entra in Servizio
+        </button>
+    </div>
+
+    <script>
+        // --- LOGICA COLLEGATA AL DB CENTRALE ---
+        let timerInterval;
+        let msTotaliStorico = 0; 
+        let timestampInizio = null; 
+        
+        // RECUPERA L'UTENTE LOGGATO
+        const utenteCorrente = localStorage.getItem('utenteLoggato') || "Sconosciuto";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById('nomeUtenteDisplay').innerText = utenteCorrente;
+            
+            // 1. LEGGI DAL DB CONDIVISO (db_ore_medici)
+            const db = JSON.parse(localStorage.getItem('db_ore_medici')) || {};
+            // Se l'utente esiste nel DB prendi le sue ore, altrimenti 0
+            msTotaliStorico = db[utenteCorrente] || 0;
+
+            // 2. CONTROLLA SE C'È UN TURNO APERTO
+            const inizioSalvato = localStorage.getItem('badge_inizioTurno_' + utenteCorrente);
+            
+            if (inizioSalvato) {
+                timestampInizio = parseInt(inizioSalvato);
+                modalitaAttiva(true);
+                avviaLoop();
+            } else {
+                modalitaAttiva(false);
+                aggiornaDisplay(msTotaliStorico);
+            }
+        });
+
+        function toggleServizio() {
+            if (timestampInizio === null) {
+                // -> AVVIA SERVIZIO
+                timestampInizio = Date.now();
+                // Salviamo l'inizio specifico per questo utente
+                localStorage.setItem('badge_inizioTurno_' + utenteCorrente, timestampInizio);
+                
+                if (typeof registraLog === "function") registraLog("Inizio Turno: " + utenteCorrente, "Successo");
+
+                Swal.fire({
+                    icon: 'success', title: 'Turno Iniziato',
+                    showConfirmButton: false, timer: 1500,
+                    background: '#112240', color: '#fff'
+                });
+
+                modalitaAttiva(true);
+                avviaLoop();
+
+            } else {
+                // -> FERMA SERVIZIO
+                Swal.fire({
+                    title: 'Terminare il turno?',
+                    text: "Il tempo verrà salvato nel registro centrale.",
+                    icon: 'warning', showCancelButton: true,
+                    confirmButtonColor: '#e74c3c', cancelButtonColor: '#233554',
+                    confirmButtonText: 'Termina', background: '#112240', color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        terminaServizio();
+                    }
+                });
+            }
+        }
+
+        function terminaServizio() {
+            clearInterval(timerInterval);
+            
+            // Calcolo durata sessione
+            const durataSessione = Date.now() - timestampInizio;
+            
+            // --- SALVATAGGIO NEL DB CONDIVISO ---
+            let db = JSON.parse(localStorage.getItem('db_ore_medici')) || {};
+            
+            // Recupera il vecchio totale dell'utente e aggiungi il nuovo
+            let vecchioTotale = db[utenteCorrente] || 0;
+            let nuovoTotale = vecchioTotale + durataSessione;
+            
+            // Scrivi nel DB
+            db[utenteCorrente] = nuovoTotale;
+            localStorage.setItem('db_ore_medici', JSON.stringify(db)); // Salva per Gestione Ore
+
+            // Aggiorna la variabile locale
+            msTotaliStorico = nuovoTotale;
+
+            // Pulisci lo stato "In Servizio"
+            localStorage.removeItem('badge_inizioTurno_' + utenteCorrente);
+            
+            if (typeof registraLog === "function") registraLog("Fine Turno. Durata: " + msToTime(durataSessione), "Info");
+
+            timestampInizio = null;
+            modalitaAttiva(false);
+            aggiornaDisplay(msTotaliStorico);
+
+            Swal.fire({
+                icon: 'success', title: 'Salvato nel Registro',
+                text: 'Le tue ore sono state aggiornate.',
+                background: '#112240', color: '#fff'
+            });
+        }
+
+        function avviaLoop() {
+            aggiornaUI();
+            timerInterval = setInterval(aggiornaUI, 1000);
+        }
+
+        function aggiornaUI() {
+            const ora = Date.now();
+            const durataParziale = ora - timestampInizio;
+            const totaleDaMostrare = msTotaliStorico + durataParziale;
+
+            aggiornaDisplay(totaleDaMostrare);
+            document.getElementById('currentDuration').innerText = msToTime(durataParziale);
+            
+            const dataStart = new Date(timestampInizio);
+            document.getElementById('startTime').innerText = 
+                dataStart.getHours().toString().padStart(2,'0') + ":" + 
+                dataStart.getMinutes().toString().padStart(2,'0');
+        }
+
+        function modalitaAttiva(attivo) {
+            const card = document.getElementById('cardElement');
+            const btn = document.getElementById('mainBtn');
+            const sessionBox = document.getElementById('sessionBox');
+
+            if (attivo) {
+                card.classList.add('active-mode');
+                sessionBox.style.display = 'block';
+                btn.innerHTML = '<i class="fa-solid fa-stop"></i> Termina Turno';
+                btn.className = 'btn-action btn-stop';
+            } else {
+                card.classList.remove('active-mode');
+                sessionBox.style.display = 'none';
+                btn.innerHTML = '<i class="fa-solid fa-play"></i> Entra in Servizio';
+                btn.className = 'btn-action btn-start';
+                if(timerInterval) clearInterval(timerInterval);
+            }
+        }
+
+        function aggiornaDisplay(ms) {
+            document.getElementById('mainTimer').innerText = msToTime(ms);
+        }
+
+        function msToTime(ms) {
+            let s = Math.floor(ms / 1000);
+            let m = Math.floor(s / 60);
+            let h = Math.floor(m / 60);
+            s = s % 60; m = m % 60;
+            return `${pad(h)}:${pad(m)}:${pad(s)}`;
+        }
+        function pad(n) { return n.toString().padStart(2, '0'); }
+    </script>
+</body>
+</html>

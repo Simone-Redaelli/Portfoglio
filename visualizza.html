@@ -126,5 +126,6 @@
             html2pdf().set({ margin:0, filename: nomeFile, image:{type:'jpeg', quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a4'} }).from(el).save().then(() => el.style.boxShadow = '0 0 30px rgba(0,0,0,0.8)');
         }
     </script>
+    <script src="logger.js"></script>
 </body>
 </html>
