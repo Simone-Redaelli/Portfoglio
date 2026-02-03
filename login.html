@@ -75,10 +75,204 @@
             padding: 10px 20px; border-radius: 30px; transition: 0.3s;
         }
         .back-home-link:hover { color: #64ffda; background: rgba(100, 255, 218, 0.05); }
+        /* Contenitore dello sfondo che sta dietro a tutto */
+        .medical-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0b1120; /* Il tuo colore scuro di sfondo */
+            z-index: -1; /* Manda lo sfondo DIETRO a tutto il resto */
+            overflow: hidden;
+        }
+
+        /* Griglia stile monitor medico (opzionale, fa molto scena) */
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 219, 222, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 219, 222, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; /* Grandezza quadratini griglia */
+            pointer-events: none;
+        }
+
+        /* Contenitore della linea */
+        .heartbeat-line {
+            position: absolute;
+            top: 50%; /* Posizionato a metà schermo verticalmente */
+            left: 0;
+            width: 200%; /* Largo il doppio per permettere lo scorrimento fluido */
+            height: 150px;
+            transform: translateY(-50%);
+            opacity: 0.4; /* Opacità bassa per non disturbare la lettura */
+            display: flex;
+        }
+
+        /* Stile della linea SVG */
+        .heartbeat-line svg {
+            width: 50%; /* Occupa metà del contenitore largo 200% */
+            height: 100%;
+        }
+
+        .heartbeat-line path {
+            fill: none;
+            stroke: #00dbde; /* Il tuo colore Ciano Neon */
+            stroke-width: 2px;
+            vector-effect: non-scaling-stroke;
+            /* Effetto Neon incandescente */
+            filter: drop-shadow(0 0 5px rgba(0, 219, 222, 0.8)); 
+        }
+
+        /* Animazione che muove la linea */
+        .heartbeat-line {
+            animation: scrollHeartbeat 10s linear infinite;
+        }
+        /* --- SFONDO MONITOR --- */
+.monitor-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #050a14; /* Sfondo molto scuro, quasi nero */
+    z-index: -1;
+    overflow: hidden;
+}
+
+/* Griglia millimetrata più sottile e realistica */
+.grid-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 219, 222, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 219, 222, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.6;
+}
+
+/* Vignettatura (bordi scuri) per effetto profondità */
+.monitor-screen::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 50%, #020408 100%);
+    pointer-events: none;
+}
+
+/* --- ECG SETUP --- */
+.ecg-container {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    transform: translateY(-50%);
+}
+
+.ecg-svg {
+    width: 100%;
+    height: 100%;
+}
+
+#ecg-path {
+    fill: none;
+    stroke: #00dbde; /* Il tuo colore Ciano */
+    stroke-width: 3px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    
+    /* TRUCCO PER L'ANIMAZIONE "DISEGNO" */
+    /* Crea un pattern: 300px di linea, 2000px di spazio vuoto */
+    stroke-dasharray: 300 2000; 
+    stroke-dashoffset: 2300; /* Nasconde l'inizio */
+    
+    animation: liveBeat 5s linear infinite;
+    
+    /* Bagliore Neon */
+    filter: drop-shadow(0 0 4px rgba(0, 219, 222, 0.8)) 
+            drop-shadow(0 0 10px rgba(0, 219, 222, 0.4));
+}
+
+/* Animazione che fa scorrere il tratto "pieno" lungo il percorso invisibile */
+@keyframes liveBeat {
+    0% {
+        stroke-dashoffset: 2300; /* Parte da destra (fuori) o sinistra */
+    }
+    100% {
+        stroke-dashoffset: 0; /* Arriva alla fine */
+    }
+}
+
+/* --- SECONDA LINEA FANTASMA (Opzionale) --- */
+/* Aggiunge una traccia debole fissa per far vedere dove passerà la linea */
+.ecg-svg::before {
+    /* Questo richiederebbe duplicare l'SVG in HTML, 
+       ma per semplicità lasciamo solo il raggio luminoso che è più scenico */
+}
+
+/* Raggio di scansione verticale (opzionale, stile radar) */
+.scan-beam {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px; /* Larghezza sfumatura */
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 219, 222, 0.1), transparent);
+    animation: beamMove 4s linear infinite;
+    pointer-events: none;
+    display: none; /* Rimuovi questo se non ti piace l'effetto "radar" verticale */
+}
+
+@keyframes beamMove {
+    0% { left: -5%; }
+    100% { left: 105%; }
+}
+
+@keyframes scrollHeartbeat {
+    0% {
+        transform: translate(0, -50%);
+    }
+    100% {
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Se vuoi aggiungere una vignettatura scura ai bordi per focus centrale */
+.medical-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 40%, #0b1120 100%);
+    pointer-events: none;
+}
     </style>
 </head>
 <body>
-
+    <div class="monitor-screen">
+    <div class="grid-overlay"></div>
+    
+    <div class="ecg-container">
+        <svg viewBox="0 0 1500 200" preserveAspectRatio="none" class="ecg-svg">
+            <path id="ecg-path" d="M0,100 L100,100 L120,100 L135,100 L150,50 L165,150 L180,80 L195,110 L210,100 L400,100 L420,100 L435,40 L450,160 L465,70 L480,110 L495,100 L800,100 L820,100 L835,20 L850,180 L865,60 L880,120 L895,100 L1200,100 L1220,100 L1235,50 L1250,150 L1265,80 L1280,110 L1295,100 L1500,100" 
+            vector-effect="non-scaling-stroke"></path>
+        </svg>
+    </div>
+    
+    <div class="scan-beam"></div>
+</div>
+</div>
     <div class="login-card">
         <div class="logo-area">
             <div class="logo-icon-container">
