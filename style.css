@@ -1540,4 +1540,28 @@ a, button, input {
     background: rgba(100, 255, 218, 0.2);
     box-shadow: 0 0 15px rgba(100, 255, 218, 0.4); /* Effetto luce */
     transform: translateY(-2px);
+
+}
+
+/* Stile Bottone Area Riservata nella Navbar */
+.btn-riservata {
+    background-color: transparent;      /* Sfondo trasparente */
+    border: 2px solid #64ffda;          /* Bordo verde acqua */
+    color: #64ffda;                     /* Testo verde acqua */
+    padding: 8px 20px;                  /* Spaziatura interna */
+    border-radius: 50px;                /* Bordi arrotondati */
+    text-decoration: none !important;   /* Toglie la sottolineatura brutta */
+    font-weight: 600;                   /* Testo un po' più grassetto */
+    transition: all 0.3s ease;          /* Animazione fluida */
+    display: inline-flex;               /* Allinea icona e testo */
+    align-items: center;
+    gap: 8px;                           /* Spazio tra icona e testo */
+    margin-left: 15px;                  /* Un po' di aria dagli altri link */
+}
+
+/* Effetto quando passi sopra col mouse */
+.btn-riservata:hover {
+    background-color: rgba(100, 255, 218, 0.1); /* Sfondo leggermente verde */
+    transform: translateY(-2px);                /* Si alza leggermente */
+    box-shadow: 0 5px 15px rgba(100, 255, 218, 0.2); /* Ombra luminosa */
 }
