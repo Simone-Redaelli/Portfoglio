@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartelle Cliniche - EMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body {
+            background-color: #0a192f; color: #ccd6f6; min-height: 100vh; padding: 40px;
+            background-image: radial-gradient(circle at 50% 50%, rgba(17, 34, 64, 1) 0%, rgba(10, 25, 47, 1) 100%);
+        }
+        .container { max-width: 1200px; margin: 50px auto; }
+        .glass-panel {
+            background: rgba(17, 34, 64, 0.7); backdrop-filter: blur(12px);
+            border: 1px solid #233554; border-radius: 15px; padding: 30px;
+        }
+        h2 { color: #64ffda; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        /* Lista Pazienti */
+        .paziente-item {
+            background: rgba(2, 12, 27, 0.5); border: 1px solid #233554;
+            padding: 15px; margin-bottom: 10px; border-radius: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: 0.3s; cursor: pointer;
+        }
+        .paziente-item:hover { border-color: #64ffda; background: rgba(100, 255, 218, 0.05); }
+        
+        /* Sezione Documenti (Nascosta all'inizio) */
+        #sezioneDocumenti { display: none; margin-top: 30px; border-top: 2px solid #64ffda; padding-top: 20px; }
+        
+        .doc-card {
+            background: #112240; border-left: 4px solid #64ffda;
+            padding: 15px; margin-bottom: 10px; border-radius: 5px;
+        }
+        
+        .btn-add-doc {
+            background: #64ffda; color: #0a192f; border: none; padding: 10px 20px;
+            border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 20px;
+        }
+        
+        .back-btn { color: #64ffda; text-decoration: none; margin-bottom: 20px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="portale.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Torna al Portale</a>
+
+    <div class="glass-panel" id="listaPazientiCont">
+        <h2><i class="fa-solid fa-users"></i> Seleziona un Paziente</h2>
+        <input type="text" id="searchPaziente" placeholder="Cerca paziente..." 
+               style="width:100%; padding:10px; margin-bottom:20px; background:#020c1b; border:1px solid #233554; color:white;">
+        <div id="pazientiList"></div>
+    </div>
+
+    <div class="glass-panel" id="sezioneDocumenti">
+        <button onclick="chiudiCartella()" style="float:right; background:none; border:none; color:#ff4444; cursor:pointer;">Chiudi X</button>
+        <h2 id="nomePazienteTitolo">Cartella di: ...</h2>
+        <p id="infoPazienteSottotitolo" style="margin-bottom:20px; opacity:0.7;"></p>
+        
+        <button class="btn-add-doc" onclick="nuovoDocumento()"><i class="fa-solid fa-plus"></i> Aggiungi Documento / Referto</button>
+        
+        <div id="documentiList">
+            </div>
+    </div>
+</div>
+
+<script>
+
+    const ARCHIVIO_MODELLI = [
+    { 
+        titolo: "Rapporto Intervento EMS", 
+        testo: "SINTOMI: \nDIAGNOSI: \nTRATTAMENTO: \nNOTE: " 
+    },
+    { 
+        titolo: "Prescrizione Farmaci", 
+        testo: "FARMACO: \nDOSAGGIO: \nORARI: " 
+    },
+    { 
+        titolo: "Certificato di Buona Salute", 
+        testo: "Si certifica che il paziente è in condizioni stabili dopo i controlli effettuati in data odierna." 
+    },
+    { 
+        titolo: "Verbale di Dimissioni", 
+        testo: "Il paziente viene dimesso con le seguenti raccomandazioni: \n- \n- " 
+    }
+];
+    let pazienteSelezionatoCF = null;
+
+    document.addEventListener("DOMContentLoaded", caricaPazienti);
+
+    const targetCF = localStorage.getItem('target_paziente_cf');
+        if (targetCF) {
+            const db = JSON.parse(localStorage.getItem('db_cittadini')) || [];
+            const paziente = db.find(p => p.cf === targetCF);
+            
+            if (paziente) {
+                apriCartella(paziente);
+            }
+            
+            // Puliamo il target così la prossima volta si apre normalmente
+            localStorage.removeItem('target_paziente_cf');
+        }
+
+    function caricaPazienti() {
+        const div = document.getElementById('pazientiList');
+        const db = JSON.parse(localStorage.getItem('db_cittadini')) || [];
+        div.innerHTML = '';
+
+        if(db.length === 0) {
+            div.innerHTML = "<p>Nessun cittadino registrato. Vai in 'Anagrafica' per aggiungerli.</p>";
+            return;
+        }
+
+        db.forEach(p => {
+            const item = document.createElement('div');
+            item.className = 'paziente-item';
+            item.innerHTML = `
+                <div>
+                    <strong>${p.cognome} ${p.nome}</strong><br>
+                    <small>${p.cf}</small>
+                </div>
+                <i class="fa-solid fa-folder-open" style="color:#64ffda"></i>
+            `;
+            item.onclick = () => apriCartella(p);
+            div.appendChild(item);
+        });
+    }
+
+    function apriCartella(paziente) {
+        pazienteSelezionatoCF = paziente.cf;
+        document.getElementById('listaPazientiCont').style.display = 'none';
+        document.getElementById('sezioneDocumenti').style.display = 'block';
+        document.getElementById('nomePazienteTitolo').innerText = `Cartella di: ${paziente.cognome} ${paziente.nome}`;
+        document.getElementById('infoPazienteSottotitolo').innerText = `CF: ${paziente.cf} | Data Nascita: ${paziente.dataNascita}`;
+        caricaDocumenti();
+    }
+
+    function chiudiCartella() {
+        document.getElementById('listaPazientiCont').style.display = 'block';
+        document.getElementById('sezioneDocumenti').style.display = 'none';
+    }
+
+    async function nuovoDocumento() {
+    // Generiamo le opzioni per il menù a tendina
+    let opzioniModelli = ARCHIVIO_MODELLI.map((m, index) => `<option value="${index}">${m.titolo}</option>`).join('');
+
+    const { value: formValues } = await Swal.fire({
+        title: 'Nuovo Documento Clinico',
+        background: '#112240',
+        color: '#fff',
+        html: `
+            <label style="display:block; margin-bottom:10px; color:#64ffda">Seleziona Modello Archivio:</label>
+            <select id="swal-select-modello" class="swal2-input" style="width: 80%; margin-bottom: 20px;">
+                <option value="">-- Documento Vuoto --</option>
+                ${opzioniModelli}
+            </select>
+            <input id="swal-input-titolo" class="swal2-input" placeholder="Titolo Documento">
+            <textarea id="swal-input-testo" class="swal2-textarea" placeholder="Dettagli del referto..."></textarea>
+        `,
+        didOpen: () => {
+            // Se cambi modello nel menù, compila automaticamente i campi sotto
+            const select = document.getElementById('swal-select-modello');
+            select.addEventListener('change', (e) => {
+                const index = e.target.value;
+                if(index !== "") {
+                    document.getElementById('swal-input-titolo').value = ARCHIVIO_MODELLI[index].titolo;
+                    document.getElementById('swal-input-testo').value = ARCHIVIO_MODELLI[index].testo;
+                }
+            });
+        },
+        focusConfirm: false,
+        preConfirm: () => {
+            return [
+                document.getElementById('swal-input-titolo').value,
+                document.getElementById('swal-input-testo').value
+            ]
+        }
+    });
+
+    if (formValues && formValues[0]) {
+        const doc = {
+            id: Date.now(),
+            pazienteCF: pazienteSelezionatoCF,
+            titolo: formValues[0],
+            testo: formValues[1],
+            data: new Date().toLocaleString('it-IT'),
+            medico: localStorage.getItem('utenteLoggato') || "Medico EMS"
+        };
+
+        let docs = JSON.parse(localStorage.getItem('db_documenti')) || [];
+        docs.push(doc);
+        localStorage.setItem('db_documenti', JSON.stringify(docs));
+        caricaDocumenti();
+        
+        Swal.fire({ icon: 'success', title: 'Salvato!', background: '#112240', color: '#fff', timer: 1000, showConfirmButton: false });
+    }
+}
+        const { value: formValues } = await Swal.fire({
+            title: 'Nuovo Documento Clinico',
+            background: '#112240', color: '#fff',
+            html:
+                '<input id="swal-input1" class="swal2-input" placeholder="Titolo Documento (es. Intervento)">' +
+                '<textarea id="swal-input2" class="swal2-textarea" placeholder="Descrizione / Referto / Note"></textarea>',
+            focusConfirm: false,
+            preConfirm: () => {
+                return [
+                    document.getElementById('swal-input1').value,
+                    document.getElementById('swal-input2').value
+                ]
+            }
+        });
+
+        if (formValues && formValues[0]) {
+            const doc = {
+                id: Date.now(),
+                pazienteCF: pazienteSelezionatoCF,
+                titolo: formValues[0],
+                testo: formValues[1],
+                data: new Date().toLocaleString('it-IT'),
+                medico: localStorage.getItem('utenteLoggato') || "Medico EMS"
+            };
+
+            let docs = JSON.parse(localStorage.getItem('db_documenti')) || [];
+            docs.push(doc);
+            localStorage.setItem('db_documenti', JSON.stringify(docs));
+            caricaDocumenti();
+        }
+
+    function caricaDocumenti() {
+        const div = document.getElementById('documentiList');
+        const docs = JSON.parse(localStorage.getItem('db_documenti')) || [];
+        div.innerHTML = '';
+
+        const filtrati = docs.filter(d => d.pazienteCF === pazienteSelezionatoCF);
+
+        if(filtrati.length === 0) {
+            div.innerHTML = "<p style='opacity:0.5'>Nessun documento presente in questa cartella.</p>";
+            return;
+        }
+
+        filtrati.sort((a,b) => b.id - a.id).forEach(d => {
+            const card = document.createElement('div');
+            card.className = 'doc-card';
+            card.innerHTML = `
+                <small style="color:#64ffda">${d.data} - Redatto da: ${d.medico}</small>
+                <h4 style="margin:5px 0;">${d.titolo}</h4>
+                <p style="font-size:0.9rem; white-space: pre-wrap;">${d.testo}</p>
+            `;
+            div.appendChild(card);
+        });
+    }
+</script>
+
+</body>
+</html>

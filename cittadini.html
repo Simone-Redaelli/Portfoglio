@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Cittadini - Ospedale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* --- STILE GENERALE (Uguale al Badge) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        
+        body {
+            background-color: #0a192f; 
+            color: #ccd6f6; 
+            min-height: 100vh;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 50%, rgba(17, 34, 64, 1) 0%, rgba(10, 25, 47, 1) 100%);
+        }
+
+        /* Layout a due colonne */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+            margin-top: 50px;
+        }
+
+        /* --- CARD STILE VETRO --- */
+        .glass-panel {
+            background: rgba(17, 34, 64, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid #233554;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.3s;
+        }
+        
+        h2 { color: #64ffda; margin-bottom: 20px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        
+        /* --- FORM DI INSERIMENTO --- */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; color: #8892b0; margin-bottom: 5px; font-size: 0.9rem; }
+        
+        .input-sci {
+            width: 100%;
+            padding: 12px;
+            background: rgba(2, 12, 27, 0.7);
+            border: 1px solid #233554;
+            color: #e6f1ff;
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .input-sci:focus { border-color: #64ffda; box-shadow: 0 0 10px rgba(100, 255, 218, 0.1); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid #64ffda;
+            color: #64ffda;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background: rgba(100, 255, 218, 0.1); transform: translateY(-2px); }
+
+        /* --- TABELLA DATABASE --- */
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            border-bottom: 2px solid #233554;
+            color: #fff;
+        }
+
+        .table-wrapper { overflow-x: auto; max-height: 600px; }
+        
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        
+        th { text-align: left; padding: 15px; color: #64ffda; border-bottom: 2px solid #233554; position: sticky; top: 0; background: #0a192f; }
+        td { padding: 15px; border-bottom: 1px solid #233554; color: #8892b0; font-size: 0.95rem; }
+        
+        tr:hover td { background: rgba(100, 255, 218, 0.05); color: #fff; }
+
+        .btn-del {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-del:hover { background: #e74c3c; color: #fff; }
+
+        /* Tasto Home */
+        .home-btn {
+            position: absolute; top: 20px; left: 20px;
+            color: #64ffda; text-decoration: none; border: 1px solid #64ffda;
+            padding: 8px 15px; border-radius: 20px; font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="portale.html" class="home-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
+
+    <div class="container">
+        <div class="glass-panel">
+            <h2><i class="fa-solid fa-user-plus"></i> Nuovo Cittadino</h2>
+            <form id="citizenForm">
+                
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1">
+                        <label>Nome</label>
+                        <input type="text" id="nome" class="input-sci" required placeholder="Mario">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label>Cognome</label>
+                        <input type="text" id="cognome" class="input-sci" required placeholder="Rossi">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Codice Fiscale</label>
+                    <input type="text" id="cf" class="input-sci" style="text-transform: uppercase;" required placeholder="RSSMRA80A01H501U">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1">
+                        <label>Data di Nascita</label>
+                        <input type="date" id="dataNascita" class="input-sci" required>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label>Luogo di Nascita</label>
+                        <input type="text" id="luogoNascita" class="input-sci" placeholder="Roma">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Telefono</label>
+                    <input type="tel" id="telefono" class="input-sci" placeholder="+39 333...">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" class="input-sci" placeholder="email@esempio.com">
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-save"></i> Registra Cittadino
+                </button>
+            </form>
+        </div>
+
+        <div class="glass-panel">
+            <h2><i class="fa-solid fa-database"></i> Database Cittadini</h2>
+            <input type="text" id="searchInput" class="search-bar" placeholder="Cerca per Nome o Codice Fiscale..." onkeyup="filtraTabella()">
+            
+            <div class="table-wrapper">
+                <table id="cittadiniTable">
+                    <thead>
+                        <tr>
+                            <th>Nominativo</th>
+                            <th>Data Nascita</th>
+                            <th>Codice Fiscale</th>
+                            <th>Contatti</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestione Salvataggio Dati (LocalStorage)
+        document.addEventListener("DOMContentLoaded", caricaTabella);
+
+        document.getElementById('citizenForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. Raccogli i dati
+            const nuovoCittadino = {
+                id: Date.now(), // ID univoco basato sul tempo
+                nome: document.getElementById('nome').value,
+                cognome: document.getElementById('cognome').value,
+                cf: document.getElementById('cf').value.toUpperCase(),
+                dataNascita: document.getElementById('dataNascita').value,
+                luogoNascita: document.getElementById('luogoNascita').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email').value
+            };
+
+            // 2. Salva in LocalStorage
+            let db = JSON.parse(localStorage.getItem('db_cittadini')) || [];
+            
+            // Controllo duplicati (opzionale: basato su CF)
+            const esiste = db.some(c => c.cf === nuovoCittadino.cf);
+            if(esiste) {
+                Swal.fire({icon: 'error', title: 'Errore', text: 'Cittadino già registrato con questo Codice Fiscale!', background: '#112240', color: '#fff'});
+                return;
+            }
+
+            db.push(nuovoCittadino);
+            localStorage.setItem('db_cittadini', JSON.stringify(db));
+
+            // 3. Feedback e Pulizia
+            Swal.fire({
+                icon: 'success', 
+                title: 'Registrato', 
+                text: `${nuovoCittadino.nome} ${nuovoCittadino.cognome} aggiunto al database.`,
+                timer: 1500, showConfirmButton: false, background: '#112240', color: '#fff'
+            });
+            
+            document.getElementById('citizenForm').reset();
+            caricaTabella();
+        });
+
+        // Funzione per caricare la tabella
+        function caricaTabella() {
+            const tbody = document.querySelector('#cittadiniTable tbody');
+            tbody.innerHTML = '';
+            
+            let db = JSON.parse(localStorage.getItem('db_cittadini')) || [];
+
+            // Ordina per cognome
+            db.sort((a, b) => a.cognome.localeCompare(b.cognome));
+
+           db.forEach(c => {
+            const tr = document.createElement('tr');
+            // Aggiungiamo lo stile 'cursor:pointer' e l'evento onclick sulla riga o sul nome
+            tr.innerHTML = `
+                <td onclick="apriCartellaDaAnagrafica('${c.cf}')" style="cursor:pointer;">
+                    <strong style="color:#64ffda"><i class="fa-solid fa-folder-open"></i> ${c.cognome} ${c.nome}</strong><br>
+                    <small style="opacity:0.7">${c.luogoNascita}</small>
+                </td>
+                <td>${formatDate(c.dataNascita)}</td>
+                <td><span style="background:rgba(100,255,218,0.1); padding:2px 5px; border-radius:4px; color:#64ffda">${c.cf}</span></td>
+                <td>${c.telefono}<br><small>${c.email}</small></td>
+                <td>
+                    <button class="btn-del" onclick="event.stopPropagation(); eliminaCittadino(${c.id})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Nuova funzione per saltare direttamente alla cartella clinica
+        function apriCartellaDaAnagrafica(codiceFiscale) {
+            // Salviamo temporaneamente il CF per farlo leggere alla pagina cartelle
+            localStorage.setItem('target_paziente_cf', codiceFiscale);
+            window.location.href = 'cartelle.html';
+        }
+        }
+
+        // Funzione Elimina
+        function eliminaCittadino(id) {
+            Swal.fire({
+                title: 'Sei sicuro?', text: "Non potrai recuperare questo dato.", icon: 'warning',
+                showCancelButton: true, confirmButtonColor: '#e74c3c', cancelButtonColor: '#233554',
+                confirmButtonText: 'Sì, elimina', background: '#112240', color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let db = JSON.parse(localStorage.getItem('db_cittadini')) || [];
+                    db = db.filter(c => c.id !== id);
+                    localStorage.setItem('db_cittadini', JSON.stringify(db));
+                    caricaTabella();
+                    Swal.fire({title:'Eliminato!', icon:'success', timer:1000, showConfirmButton:false, background:'#112240', color:'#fff'});
+                }
+            })
+        }
+
+        // Funzione Cerca (Filtro)
+        function filtraTabella() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById('cittadiniTable');
+            const tr = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < tr.length; i++) {
+                let tdNome = tr[i].getElementsByTagName("td")[0];
+                let tdCF = tr[i].getElementsByTagName("td")[2];
+                if (tdNome || tdCF) {
+                    let txtValueNome = tdNome.textContent || tdNome.innerText;
+                    let txtValueCF = tdCF.textContent || tdCF.innerText;
+                    if (txtValueNome.toUpperCase().indexOf(filter) > -1 || txtValueCF.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+
+        function formatDate(dateString) {
+            if(!dateString) return "--";
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            return new Date(dateString).toLocaleDateString('it-IT', options);
+        }
+    </script>
+    <script src="logger.js"></script>
+</body>
+</html>

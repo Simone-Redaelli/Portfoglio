@@ -25,7 +25,6 @@
     
     label { display: block; color: #8892b0; font-size: 0.85rem; margin-bottom: 5px; }
     
-    /* INPUT GENERALI (Testo, Data, ecc) */
     input, select, textarea { 
         width: 100%; 
         padding: 10px; 
@@ -38,26 +37,21 @@
     input:focus, textarea:focus, select:focus { border-color: #64ffda; }
     textarea { resize: vertical; height: 80px; }
 
-    /* --- CORREZIONE CHECKBOX (Quella che serve a te) --- */
-    .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-top: 5px; }
-    
-    .checkbox-item { 
-        display: flex; 
-        align-items: center; 
-        gap: 10px; 
-        cursor: pointer; 
-        color: #ccd6f6;
-        font-size: 0.95rem;
+    /* STILE RICERCA DINAMICA */
+    .search-wrapper { position: relative; margin-bottom: 20px; }
+    #risultatiRicerca { 
+        display: none; position: absolute; top: 100%; left: 0; right: 0; 
+        background: #1d2d50; border: 1px solid #64ffda; border-radius: 0 0 5px 5px; 
+        z-index: 1000; max-height: 200px; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
+    .search-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #233554; }
+    .search-item:hover { background: #233554; }
+    .search-item strong { color: #64ffda; display: block; }
+    .search-item small { color: #8892b0; font-size: 0.75rem; }
 
-    /* Qui forziamo il quadratino a restare piccolo e non allargarsi */
-    input[type="checkbox"] {
-        width: auto !important; /* Importante: non usare 100% */
-        margin: 0;
-        transform: scale(1.2); /* Lo rendiamo leggermente più grande */
-        cursor: pointer;
-    }
-    /* ---------------------------------------------------- */
+    .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-top: 5px; }
+    .checkbox-item { display: flex; align-items: center; gap: 10px; cursor: pointer; color: #ccd6f6; font-size: 0.95rem; }
+    input[type="checkbox"] { width: auto !important; margin: 0; transform: scale(1.2); cursor: pointer; }
 
     .btn-group { display: flex; gap: 10px; margin-top: 20px; }
     .btn-action {
@@ -97,7 +91,13 @@
         <h2><i class="fa-solid fa-pen-to-square"></i> Compila Referto</h2>
 
         <div class="form-section" style="border-left: 4px solid #64ffda; padding-left: 15px;">
-            <label style="color: #64ffda; font-weight: bold;">CATEGORIA ARCHIVIO</label>
+            <label style="color: #64ffda; font-weight: bold;">RICERCA PAZIENTE NEL DB</label>
+            <div class="search-wrapper">
+                <input type="text" id="inp_search" placeholder="Scrivi nome, cognome o CF..." onkeyup="cercaPaziente()">
+                <div id="risultatiRicerca"></div>
+            </div>
+            
+            <label style="color: #64ffda; font-weight: bold; margin-top: 10px;">CATEGORIA ARCHIVIO</label>
             <select id="inp_categoria">
                 <option value="ematici">Esami Ematici</option>
                 <option value="radiologia">Radiologia & RX</option>
@@ -203,6 +203,51 @@
     <script>
         document.getElementById('out_dataoggi').innerText = new Date().toLocaleDateString('it-IT');
 
+        // LOGICA DI RICERCA NEL DATABASE CITTADINI
+        function cercaPaziente() {
+            const query = document.getElementById('inp_search').value.toLowerCase();
+            const resultsDiv = document.getElementById('risultatiRicerca');
+            const db = JSON.parse(localStorage.getItem('db_cittadini')) || [];
+
+            if (query.length < 2) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            const filtrati = db.filter(p => 
+                p.nome.toLowerCase().includes(query) || 
+                p.cognome.toLowerCase().includes(query) || 
+                p.cf.toLowerCase().includes(query)
+            );
+
+            if (filtrati.length > 0) {
+                resultsDiv.innerHTML = filtrati.map(p => `
+                    <div class="search-item" onclick="selezionaPaziente('${p.cf}')">
+                        <strong>${p.cognome} ${p.nome}</strong>
+                        <small>CF: ${p.cf} | Tel: ${p.telefono}</small>
+                    </div>
+                `).join('');
+                resultsDiv.style.display = 'block';
+            } else {
+                resultsDiv.style.display = 'none';
+            }
+        }
+
+        function selezionaPaziente(cf) {
+            const db = JSON.parse(localStorage.getItem('db_cittadini')) || [];
+            const p = db.find(item => item.cf === cf);
+            if (p) {
+                document.getElementById('inp_nome').value = p.nome;
+                document.getElementById('inp_cognome').value = p.cognome;
+                document.getElementById('inp_dob').value = p.dataNascita;
+                document.getElementById('inp_tel').value = p.telefono;
+                
+                document.getElementById('risultatiRicerca').style.display = 'none';
+                document.getElementById('inp_search').value = `${p.cognome} ${p.nome}`;
+                updateDoc();
+            }
+        }
+
         function updateDoc() {
             const getVal = (id) => document.getElementById(id).value;
             const setTxt = (id, txt) => document.getElementById(id).innerText = txt;
@@ -233,75 +278,34 @@
             html2pdf().set({ margin:0, filename: nomeFile, image:{type:'jpeg', quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a4'} }).from(el).save().then(() => el.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)');
         }
 
-        // --- SALVATAGGIO COMPLETO ---
-        // --- FUNZIONE INVIO DISCORD ---
-function inviaLogDiscord(dati) {
-    // 1. INSERISCI QUI IL TUO LINK WEBHOOK DI DISCORD
-    const webhookURL = "https://discord.com/api/webhooks/1468324881610313901/IERLsPht9pJ7gqYeBu3frANw2G56DQmbv3G6-DKEka9bk10f4KzRriQ2OIBH8hYKRjBy"; 
+        function inviaLogDiscord(dati) {
+            const webhookURL = "https://discord.com/api/webhooks/1468324881610313901/IERLsPht9pJ7gqYeBu3frANw2G56DQmbv3G6-DKEka9bk10f4KzRriQ2OIBH8hYKRjBy"; 
+            const listaEsami = dati.esami.length > 0 ? dati.esami.map(e => "• " + e).join("\n") : "Nessun esame eseguito";
 
-    // Formattiamo la lista esami per renderla leggibile
-    const listaEsami = dati.esami.length > 0 ? dati.esami.map(e => "• " + e).join("\n") : "Nessun esame eseguito";
+            const payload = {
+                username: "Archivio Medico",
+                embeds: [{
+                    title: "🚑 Nuovo Referto Medico",
+                    color: 13632027,
+                    description: "**Paziente:** " + dati.nome + " " + dati.cognome,
+                    fields: [
+                        { name: "👤 Dati Paziente", value: `Nato il: ${dati.dob}\nTel: ${dati.tel}`, inline: true },
+                        { name: "👨‍⚕️ Medico Curante", value: `${dati.doc_nome} ${dati.doc_cognome}\n*${dati.grado}*`, inline: true },
+                        { name: "📋 Motivo & Diagnosi", value: `**Motivo:** ${dati.motivo}\n**Diagnosi:** ${dati.diagnosi}` },
+                        { name: "🔬 Esami Effettuati", value: listaEsami, inline: true },
+                        { name: "💊 Terapia", value: dati.farmaci || "Nessuna somministrazione", inline: true }
+                    ],
+                    footer: { text: "Sistema Gestionale Ospedaliero • " + dati.dataCreazione },
+                    timestamp: new Date().toISOString()
+                }]
+            };
 
-    // 2. Creiamo la scheda (Embed)
-    const payload = {
-        username: "Archivio Medico",
-        avatar_url: "https://i.imgur.com/vkQj2cO.png", // Icona generica medica (puoi cambiarla)
-        embeds: [
-            {
-                title: "🚑 Nuovo Referto Medico",
-                color: 13632027, // Colore Rosso (#d0021b)
-                description: "**Paziente:** " + dati.nome + " " + dati.cognome,
-                fields: [
-                    {
-                        name: "👤 Dati Paziente",
-                        value: `Nato il: ${dati.dob}\nTel: ${dati.tel}`,
-                        inline: true
-                    },
-                    {
-                        name: "👨‍⚕️ Medico Curante",
-                        value: `${dati.doc_nome} ${dati.doc_cognome}\n*${dati.grado}*`,
-                        inline: true
-                    },
-                    {
-                        name: "📋 Motivo & Diagnosi",
-                        value: `**Motivo:** ${dati.motivo}\n**Diagnosi:** ${dati.diagnosi}`
-                    },
-                    {
-                        name: "🔬 Esami Effettuati",
-                        value: listaEsami,
-                        inline: true
-                    },
-                    {
-                        name: "💊 Terapia",
-                        value: dati.farmaci || "Nessuna somministrazione",
-                        inline: true
-                    }
-                ],
-                footer: {
-                    text: "Sistema Gestionale Ospedaliero • " + dati.dataCreazione,
-                },
-                timestamp: new Date().toISOString()
-            }
-        ]
-    };
+            fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        }
 
-
-    // 3. Inviamo i dati a Discord
-    fetch(webhookURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    }).then(response => {
-        console.log("Inviato a Discord!");
-    }).catch(error => {
-        console.error("Errore invio Discord:", error);
-        alert("Attenzione: Impossibile contattare Discord.");
-    });
-}
         function salvaReferto() {
             const getVal = (id) => document.getElementById(id).value;
             
-            // Raccogliamo TUTTI i dati
             const datiCompleti = {
                 id: Date.now(),
                 dataCreazione: new Date().toLocaleDateString('it-IT'),
@@ -320,28 +324,19 @@ function inviaLogDiscord(dati) {
                 doc_cognome: getVal('inp_doc_cognome'),
                 grado: getVal('inp_grado'),
                 spec: getVal('inp_spec'),
-                // Salviamo gli esami come un array (lista)
                 esami: Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value)
             };
 
             if(!datiCompleti.nome) { alert("Inserisci almeno il Nome del paziente."); return; }
 
-             // Salvataggio locale
             let archivio = JSON.parse(localStorage.getItem('archivioReferti')) || [];
             archivio.push(datiCompleti);
             localStorage.setItem('archivioReferti', JSON.stringify(archivio));
-            registraLog("Creazione Referto: " + datiCompleti.nome + " " + datiCompleti.cognome, "Successo");
-
-            // --- NUOVA RIGA: INVIA A DISCORD ---
+            
             inviaLogDiscord(datiCompleti); 
-            // -----------------------------------
-
             alert("Referto Salvato in Archivio e inviato al Dispatch!");
             window.location.href = "referti.html";
-         }
-        
+        }
     </script>
-    <script src="logger.js"></script>
 </body>
 </html>
-
