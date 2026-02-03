@@ -697,21 +697,19 @@ function scrollToTop() {
 
 
 <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+    // 1. IMPORTIAMO LE FUNZIONI CORRETTE (Nota: c'è signInWithRedirect e getRedirectResult)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { 
         getAuth, 
+        GoogleAuthProvider, 
         signInWithRedirect, 
-     GoogleAuthProvider, 
-        setPersistence, 
-        browserLocalPersistence
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-  
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        getRedirectResult,
+        onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // 2. LA TUA CONFIGURAZIONE FIREBASE (Rimetti qui i tuoi dati se li hai cancellati)
     const firebaseConfig = {
-      apiKey: "AIzaSyD1LnDnFa6Yr0y2ZA1BrnGhjxGW4TrNjm0",
+        apiKey: "AIzaSyD1LnDnFa6Yr0y2ZA1BrnGhjxGW4TrNjm0",
       authDomain: "db--medici.firebaseapp.com",
       projectId: "db--medici",
       storageBucket: "db--medici.firebasestorage.app",
@@ -719,17 +717,52 @@ function scrollToTop() {
       appId: "1:1036578434966:web:f7efe660bd2a744a99b7b7",
       measurementId: "G-SXQDDFW294",
     };
-  
-    // Initialize Firebase
+
+    // 3. INIZIALIZZAZIONE
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-
-
-
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
     
-  </script>
+    // Riferimento al bottone
+    const loginBtn = document.getElementById('google-login-btn'); // Assicurati che l'ID del bottone nel HTML sia questo!
 
+    // --- PARTE A: GESTIONE DEL RITORNO DA GOOGLE ---
+    // Quando usi il redirect, la pagina si ricarica. Questa funzione controlla se l'utente è appena tornato.
+    getRedirectResult(auth)
+        .then((result) => {
+            if (result) {
+                console.log("Ritorno dal login avvenuto con successo!");
+                // L'utente verrà reindirizzato da onAuthStateChanged qui sotto
+            }
+        })
+        .catch((error) => {
+            console.error("Errore durante il redirect:", error);
+            alert("Errore Login: " + error.message);
+        });
 
+    // --- PARTE B: IL CLICK SUL BOTTONE ---
+    if (loginBtn) {
+        loginBtn.addEventListener('click', () => {
+            console.log("Avvio redirect login...");
+            signInWithRedirect(auth, provider);
+        });
+    } else {
+        console.error("ERRORE: Bottone login non trovato! Controlla l'ID nel file HTML.");
+    }
+
+    // --- PARTE C: CONTROLLO STATO UTENTE ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            console.log("Utente loggato:", user.email);
+            // Se l'email è la tua admin
+            if (user.email === "ciabatta12121@gmail.com" || user.email === "redaellisimone720@gmail.com") {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "portale.html";
+            }
+        }
+    });
+</script>
 <script type="module" src="auth.js"></script>
 </body>
 </html>
