@@ -48,7 +48,7 @@
             <i class="fas fa-search"></i>
         </button>
     </div>
-    <a href="login.html" style="background-color: transparent; border: 1px solid #64ffda; color: #64ffda; padding: 8px 18px; border-radius: 50px; text-decoration: none !important; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-left: 15px; transition: all 0.3s;">
+    <a href="login.html"id="btn-area-riservata" style="background-color: transparent; border: 1px solid #64ffda; color: #64ffda; padding: 8px 18px; border-radius: 50px; text-decoration: none !important; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; margin-left: 15px; transition: all 0.3s;">
         <i class="fa-solid fa-user"></i> Area Riservata
     </a>
         </li>
@@ -697,17 +697,9 @@ function scrollToTop() {
 
 
 <script type="module">
-    // 1. IMPORTIAMO LE FUNZIONI CORRETTE (Nota: c'è signInWithRedirect e getRedirectResult)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { 
-        getAuth, 
-        GoogleAuthProvider, 
-        signInWithRedirect, 
-        getRedirectResult,
-        onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    // 2. LA TUA CONFIGURAZIONE FIREBASE (Rimetti qui i tuoi dati se li hai cancellati)
     const firebaseConfig = {
         apiKey: "AIzaSyD1LnDnFa6Yr0y2ZA1BrnGhjxGW4TrNjm0",
         authDomain: "db--medici.firebaseapp.com",
@@ -718,47 +710,42 @@ function scrollToTop() {
         measurementId: "G-SXQDDFW294",
     };
 
-    // 3. INIZIALIZZAZIONE
+    // Inizializzazione
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-    
-    // Riferimento al bottone
-    const loginBtn = document.getElementById('google-login-btn'); // Assicurati che l'ID del bottone nel HTML sia questo!
 
-    // --- PARTE A: GESTIONE DEL RITORNO DA GOOGLE ---
-    // Quando usi il redirect, la pagina si ricarica. Questa funzione controlla se l'utente è appena tornato.
-    getRedirectResult(auth)
-        .then((result) => {
-            if (result) {
-                console.log("Ritorno dal login avvenuto con successo!");
-                // L'utente verrà reindirizzato da onAuthStateChanged qui sotto
-            }
-        })
-        .catch((error) => {
-            console.error("Errore durante il redirect:", error);
-            alert("Errore Login: " + error.message);
-        });
+    // Prendo il riferimento al pulsante nel menu
+    const btnArea = document.getElementById('btn-area-riservata');
 
-    // --- PARTE B: IL CLICK SUL BOTTONE ---
-    if (loginBtn) {
-        loginBtn.addEventListener('click', () => {
-            console.log("Avvio redirect login...");
-            signInWithRedirect(auth, provider);
-        });
-    } else {
-        console.error("ERRORE: Bottone login non trovato! Controlla l'ID nel file HTML.");
-    }
-
-    // --- PARTE C: CONTROLLO STATO UTENTE ---
+    // Controllo lo stato dell'utente
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            console.log("Utente loggato:", user.email);
-            // Se l'email è la tua admin
-            if (user.email === "ciabatta12121@gmail.com" || user.email === "redaellisimone720@gmail.com") {
-                window.location.href = "admin.html";
-            } else {
-                window.location.href = "portale.html";
+            // --- UTENTE LOGGATO ---
+            console.log("Utente già loggato:", user.email);
+
+            if (btnArea) {
+                // Controllo se è admin o utente normale e cambio il link del pulsante
+                if (user.email === "ciabatta12121@gmail.com" || user.email === "redaellisimone720@gmail.com") {
+                    btnArea.href = "admin.html";
+                    btnArea.innerHTML = '<i class="fa-solid fa-user-gear"></i> Dashboard Admin';
+                } else {
+                    btnArea.href = "portale.html"; // Va al portale invece che al login
+                    btnArea.innerHTML = '<i class="fa-solid fa-user-check"></i> Vai al Portale';
+                }
+                
+                // Opzionale: Cambia colore bordo per far capire che è attivo
+                btnArea.style.borderColor = "#00dbde";
+                btnArea.style.color = "#00dbde";
+            }
+
+        } else {
+            // --- UTENTE NON LOGGATO ---
+            console.log("Nessun utente loggato");
+
+            if (btnArea) {
+                // Ripristino il pulsante come era all'inizio
+                btnArea.href = "login.html";
+                btnArea.innerHTML = '<i class="fa-solid fa-user"></i> Area Riservata';
             }
         }
     });
