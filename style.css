@@ -1500,3 +1500,21 @@ a, button, input {
     
     /* Se vuoi tenere il cambio tema, spostalo fuori da .nav-extras o gestiscilo diversamente */
 }
+
+
+.login-style {
+    background-color: #00bcd4; /* Il tuo colore azzurro */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 15px;
+    transition: transform 0.2s;
+}
+
+.login-style:hover {
+    transform: scale(1.05);
+    background-color: #008ba3;
+}

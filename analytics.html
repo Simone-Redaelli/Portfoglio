@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analitica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- 1. SFONDO E BASE (Stile Coerente) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: #0a192f;
+            color: #ccd6f6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(100, 255, 218, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(65, 105, 225, 0.08) 0%, transparent 20%);
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        /* --- 2. HEADER --- */
+        .header-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        h1 { font-size: 2rem; color: #e6f1ff; display: flex; align-items: center; gap: 15px; }
+        
+        .back-btn {
+            color: #64ffda; text-decoration: none; padding: 10px 24px;
+            border: 1px solid #64ffda; border-radius: 50px; font-weight: 600;
+            background: rgba(100, 255, 218, 0.05); transition: all 0.3s;
+        }
+        .back-btn:hover { background: rgba(100, 255, 218, 0.2); transform: translateX(-5px); }
+
+        /* --- 3. CARDS VETRO --- */
+        .glass-card {
+            background: rgba(17, 34, 64, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .card-title {
+            color: #fff; font-size: 1.2rem; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* --- 4. TABELLA LOG --- */
+        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        
+        th { text-align: left; color: #8892b0; padding: 10px 15px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        tbody tr { background: rgba(255,255,255,0.02); transition: 0.2s; }
+        tbody tr:hover { background: rgba(255,255,255,0.05); transform: scale(1.01); }
+        
+        td { padding: 15px; color: #ccd6f6; vertical-align: middle; font-size: 0.95rem; }
+        td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+        td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; text-align: right; }
+
+        /* Badge Stato */
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .success { color: #64ffda; } .success .status-dot { background: #64ffda; box-shadow: 0 0 8px #64ffda; }
+        .error { color: #ff6b6b; } .error .status-dot { background: #ff6b6b; box-shadow: 0 0 8px #ff6b6b; }
+
+        /* Canvas Chart Responsivo */
+        .chart-container { position: relative; height: 350px; width: 100%; }
+    </style>
+</head>
+<body style="cursor: auto !important;">
+
+<div class="container">
+    <div class="header-row">
+        <h1><i class="fa-solid fa-chart-line" style="color: #64ffda;"></i> Dashboard Analitica</h1>
+        <a href="portale.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Torna al Portale</a>
+    </div>
+
+    <div class="glass-card">
+        <div class="card-title">
+            <i class="fa-regular fa-calendar-check"></i> Andamento Visite (Ultimi 7 Giorni)
+        </div>
+        <div class="chart-container">
+            <canvas id="visitChart"></canvas>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <div class="card-title">
+            <i class="fa-solid fa-shield-halved"></i> Log di Sistema e Accessi
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Data/Ora</th>
+                    <th>Utente</th>
+                    <th>Azione</th>
+                    <th style="text-align: right;">Stato</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="color: #8892b0;">03/02/2026 09:20</td>
+                    <td style="font-weight: bold; color: white;">simone.redaelli</td>
+                    <td>Login Portale</td>
+                    <td class="success"><span class="status-dot"></span>Successo</td>
+                </tr>
+                <tr>
+                    <td style="color: #8892b0;">03/02/2026 09:15</td>
+                    <td style="font-weight: bold; color: white;">Ospite</td>
+                    <td>Visita Home</td>
+                    <td class="success"><span class="status-dot"></span>Successo</td>
+                </tr>
+                <tr>
+                    <td style="color: #8892b0;">03/02/2026 08:50</td>
+                    <td style="font-weight: bold; color: #ff6b6b;">Sconosciuto</td>
+                    <td>Tentativo Login Errato</td>
+                    <td class="error"><span class="status-dot"></span>Errore</td>
+                </tr>
+                 <tr>
+                    <td style="color: #8892b0;">02/02/2026 22:10</td>
+                    <td style="font-weight: bold; color: white;">simone.redaelli</td>
+                    <td>Download CV</td>
+                    <td class="success"><span class="status-dot"></span>Successo</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // --- CONFIGURAZIONE GRAFICO NEON ---
+    const ctx = document.getElementById('visitChart').getContext('2d');
+
+    // 1. Creiamo un gradiente per l'area sotto la linea
+    let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(100, 255, 218, 0.4)'); // Colore iniziale (verde acqua)
+    gradient.addColorStop(1, 'rgba(100, 255, 218, 0.0)'); // Sfumatura a trasparente
+
+    const visitChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+            datasets: [{
+                label: 'Visite al sito',
+                data: [12, 19, 8, 25, 22, 30, 45],
+                borderColor: '#64ffda',       // Linea Verde Neon
+                backgroundColor: gradient,    // Sfondo sfumato
+                borderWidth: 3,
+                pointBackgroundColor: '#0a192f', // Punto scuro
+                pointBorderColor: '#64ffda',     // Bordo punto verde
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                fill: true,                   // Riempi sotto la linea
+                tension: 0.4                  // Curva morbida (non spigolosa)
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false } // Nascondi legenda standard
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' }, // Griglia sottilissima
+                    ticks: { color: '#8892b0' }
+                },
+                x: {
+                    grid: { display: false }, // Niente griglia verticale
+                    ticks: { color: '#8892b0' }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

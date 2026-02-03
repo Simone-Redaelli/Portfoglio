@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pannello Admin - Gestione Utenti</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- 1. IMPOSTAZIONI GENERALI --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+    
+        body {
+            background-color: #0a192f; /* Blu scurissimo (Navy) */
+            color: #ccd6f6; /* Bianco sporco per il testo */
+            min-height: 100vh;
+            padding: 40px 20px;
+            /* Sfondo con sfumatura sottile */
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(100, 255, 218, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 85% 85%, rgba(255, 107, 107, 0.08) 0%, transparent 25%);
+        }
+    
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    
+        /* --- 2. HEADER E NAVIGAZIONE --- */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(230, 241, 255, 0.1);
+        }
+    
+        h1 {
+            font-size: 2rem;
+            color: #e6f1ff;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+    
+        .back-btn {
+            color: #64ffda; /* Verde Neon */
+            text-decoration: none;
+            padding: 10px 24px;
+            border: 1px solid #64ffda;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(100, 255, 218, 0.05);
+        }
+    
+        .back-btn:hover {
+            background: rgba(100, 255, 218, 0.2);
+            transform: translateX(-5px);
+        }
+    
+        /* --- 3. CARD "GLASSMORPHISM" --- */
+        .admin-card {
+            background: rgba(17, 34, 64, 0.7); /* Sfondo semitrasparente */
+            backdrop-filter: blur(12px); /* Effetto vetro sfocato */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
+        }
+    
+        .card-header h3 {
+            color: #e6f1ff;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+    
+        /* --- 4. FORM DI INPUT --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsivo */
+            gap: 25px;
+        }
+    
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #8892b0;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+    
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            background-color: rgba(2, 12, 27, 0.5);
+            border: 1px solid #233554;
+            border-radius: 8px;
+            color: #e6f1ff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+    
+        input:focus, select:focus {
+            border-color: #64ffda; /* Bordo verde al focus */
+            box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.1);
+        }
+    
+        /* Bottone Principale (Crea) */
+        button.create-btn {
+            width: 100%;
+            margin-top: 30px;
+            padding: 16px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5253); /* Sfumatura Rossa */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+    
+        button.create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+    
+        /* --- 5. TABELLA MODERNA --- */
+        .table-container {
+            overflow-x: auto; /* Scroll orizzontale su mobile */
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: separate; /* Permette bordi arrotondati sulle righe */
+            border-spacing: 0 12px; /* Spazio tra le righe */
+        }
+    
+        th {
+            text-align: left;
+            color: #64ffda; /* Titoli verdi */
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 15px 10px 15px;
+            font-weight: 600;
+        }
+    
+        /* Stile delle Righe */
+        tbody tr {
+            background-color: rgba(255, 255, 255, 0.03);
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+    
+        td {
+            padding: 20px 15px;
+            color: #ccd6f6;
+            vertical-align: middle;
+        }
+    
+        /* Arrotonda i bordi della riga */
+        td:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; font-weight: 500; color: #fff; }
+        td:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; text-align: right; }
+    
+        /* Badge Ruoli */
+        .role-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+    
+        .role-admin { 
+            background: rgba(255, 107, 107, 0.15); 
+            color: #ff6b6b; 
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        .role-cliente { 
+            background: rgba(100, 255, 218, 0.15); 
+            color: #64ffda; 
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }
+        .role-collaboratore { 
+            background: rgba(255, 206, 86, 0.15); 
+            color: #ffce56; 
+            border: 1px solid rgba(255, 206, 86, 0.3);
+        }
+    
+        /* Icona Cestino */
+        .delete-btn {
+            background: transparent;
+            color: #8892b0;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover {
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+        }
+    
+        /* Responsive Mobile */
+        @media (max-width: 768px) {
+            body { padding: 20px 10px; }
+            .header-row { flex-direction: column; gap: 15px; text-align: center; }
+            .admin-card { padding: 20px; }
+            th, td { padding: 15px 10px; }
+        }
+    </style>
+</head>
+<body style="cursor: auto !important;">
+
+<div class="container">
+    <div class="header-row">
+        <h1>⚙️ Pannello Amministratore</h1>
+        <a href="portale.html" class="back-btn">⬅ Torna al Portale</a>
+    </div>
+
+    <div class="admin-card">
+        <h3><i class="fa-solid fa-user-plus"></i> Crea Nuovo Utente</h3>
+        <form id="create-user-form">
+            <div class="form-grid">
+                <div>
+                    <label>Nome e Cognome</label>
+                    <input type="text" id="new-name" placeholder="Es. Mario Rossi" required>
+                </div>
+                <div>
+                    <label>Ruolo</label>
+                    <select id="new-role">
+                        <option value="cliente">Cliente (Accesso Standard)</option>
+                        <option value="cliente">Direttore Generale</option>
+                        <option value="admin">Amministratore (Accesso Totale)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Email Accesso</label>
+                    <input type="email" id="new-email" placeholder="email@cliente.com" required>
+                </div>
+                <div>
+                    <label>Password Provvisoria</label>
+                    <input type="password" id="new-password" placeholder="Minimo 6 caratteri" required>
+                </div>
+            </div>
+            <button type="submit" class="create-btn">Crea Utente e Salva</button>
+        </form>
+    </div>
+
+    <div class="admin-card" style="border-color: #64ffda;">
+        <h3 style="color: #64ffda;"><i class="fa-solid fa-users"></i> Utenti del Sistema</h3>
+        <table id="users-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Ruolo</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { firebaseConfig } from './auth.js'; 
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // --- IL "BUTTAFUORI" DI SICUREZZA 🛡️ ---
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            // 1. Controlla nel database che ruolo ha questo utente
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                
+                // 2. SE NON È ADMIN, BUTTALO FUORI!
+                if (userData.ruolo !== 'admin') {
+                    alert("⛔ ACCESSO NEGATO: Solo gli amministratori possono vedere questa pagina.");
+                    window.location.href = "portale.html";
+                }
+            }
+        } else {
+            // Se non è loggato, via alla login
+            window.location.href = "index.html";
+        }
+    });
+    // ------------------------------------------
+
+    // CARICA UTENTI
+    async function loadUsers() {
+        const tableBody = document.querySelector("#users-table tbody");
+        tableBody.innerHTML = ""; 
+        
+        const querySnapshot = await getDocs(collection(db, "users"));
+        querySnapshot.forEach((docSnap) => {
+            const user = docSnap.data();
+            const row = `
+                <tr>
+                    <td>${user.nome}</td>
+                    <td>${user.email}</td>
+                    <td><span class="role-badge role-${user.ruolo}">${user.ruolo.toUpperCase()}</span></td>
+                    <td>
+                        <button onclick="eliminaUtente('${docSnap.id}')" style="background:none; border:none; color:#ff6b6b; cursor:pointer;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    }
+    loadUsers();
+
+    // CREA NUOVO UTENTE
+    document.getElementById('create-user-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nome = document.getElementById('new-name').value;
+        const email = document.getElementById('new-email').value;
+        const password = document.getElementById('new-password').value;
+        const ruolo = document.getElementById('new-role').value;
+        const btn = document.querySelector('.create-btn');
+
+        btn.innerText = "Creazione in corso...";
+
+        try {
+            const secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+            const secondaryAuth = getAuth(secondaryApp);
+            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+            
+            await setDoc(doc(db, "users", userCredential.user.uid), {
+                nome: nome, email: email, ruolo: ruolo, creatoIl: new Date().toISOString()
+            });
+
+            await deleteApp(secondaryApp);
+            alert("✅ Utente creato con successo!");
+            document.getElementById('create-user-form').reset();
+            loadUsers();
+
+        } catch (error) {
+            console.error(error);
+            alert("Errore: " + error.message);
+        }
+        btn.innerText = "Crea Utente e Salva";
+    });
+
+    window.eliminaUtente = async (id) => {
+        if(confirm("Eliminare l'utente dal database?")) {
+            await deleteDoc(doc(db, "users", id));
+            loadUsers();
+        }
+    }
+</script>
+
+</body>
+</html>
