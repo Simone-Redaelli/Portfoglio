@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMail Aziendale - CRI</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- LAYOUT GENERALE --- */
+        body {
+            background-color: #0a192f; color: #ccd6f6;
+            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0;
+            height: 100vh; display: flex; overflow: hidden;
+        }
+
+        /* SIDEBAR SINISTRA */
+        .sidebar {
+            width: 250px; background: #112240; border-right: 1px solid #233554;
+            display: flex; flex-direction: column; padding: 20px;
+        }
+        .app-logo { font-size: 1.2rem; font-weight: bold; color: #64ffda; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .back-link { font-size: 0.9rem; color: #8892b0; text-decoration: none; margin-bottom: 20px; display: block; }
+        .back-link:hover { color: #fff; }
+
+        .compose-btn {
+            background: #64ffda; color: #0a192f; border: none; padding: 12px;
+            border-radius: 50px; font-weight: bold; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px;
+            transition: 0.3s;
+        }
+        .compose-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(100,255,218,0.2); }
+
+        .menu-item {
+            padding: 12px 15px; cursor: pointer; border-radius: 8px; color: #8892b0;
+            margin-bottom: 5px; display: flex; align-items: center; gap: 12px; transition: 0.2s;
+        }
+        .menu-item:hover, .menu-item.active { background: rgba(100, 255, 218, 0.1); color: #64ffda; }
+        .badge { background: #ff5f5f; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; margin-left: auto; display: none;}
+
+        /* MAIN CONTENT AREA */
+        .main-area { flex: 1; display: flex; background: #0a192f; position: relative; }
+
+        /* LISTA EMAIL (Colonna Centrale) */
+        .mail-list {
+            width: 350px; border-right: 1px solid #233554; overflow-y: auto;
+            display: flex; flex-direction: column;
+        }
+        .list-header { padding: 20px; border-bottom: 1px solid #233554; font-size: 1.1rem; font-weight: bold; color: #e6f1ff; }
+        
+        .mail-item {
+            padding: 20px; border-bottom: 1px solid #233554; cursor: pointer;
+            transition: 0.2s; position: relative;
+        }
+        .mail-item:hover { background: #112240; }
+        .mail-item.unread { border-left: 3px solid #64ffda; background: rgba(100,255,218,0.02); }
+        .mail-sender { font-weight: bold; color: #e6f1ff; font-size: 0.95rem; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .mail-date { font-weight: normal; font-size: 0.75rem; color: #8892b0; }
+        .mail-subject { color: #ccd6f6; font-size: 0.9rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mail-preview { color: #8892b0; font-size: 0.8rem; height: 1.2em; overflow: hidden; }
+
+        /* VISTA DETTAGLIO (Colonna Destra) */
+        .mail-reader { flex: 1; padding: 40px; overflow-y: auto; display: none; flex-direction: column; }
+        .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #233554; }
+        .empty-state i { font-size: 5rem; margin-bottom: 20px; }
+
+        .reader-header { margin-bottom: 30px; border-bottom: 1px solid #233554; padding-bottom: 20px; }
+        .reader-subject { font-size: 1.8rem; color: #e6f1ff; margin-bottom: 10px; }
+        .reader-meta { color: #8892b0; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .reader-body { font-size: 1.1rem; line-height: 1.6; color: #ccd6f6; white-space: pre-wrap; }
+
+        /* MODALE COMPOSIZIONE (Stile SweetAlert customizzato via CSS non basta, uso modale HTML) */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .compose-box {
+            background: #112240; width: 600px; border-radius: 10px; border: 1px solid #233554;
+            display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .compose-header {
+            padding: 15px 20px; background: #0a192f; border-bottom: 1px solid #233554;
+            display: flex; justify-content: space-between; align-items: center; border-radius: 10px 10px 0 0;
+        }
+        .compose-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .c-input { background: transparent; border: none; border-bottom: 1px solid #233554; padding: 10px; color: white; font-family: inherit; outline: none; }
+        .c-input:focus { border-bottom-color: #64ffda; }
+        .c-textarea { background: rgba(255,255,255,0.02); border: 1px solid #233554; padding: 15px; color: white; border-radius: 5px; resize: none; font-family: inherit; height: 200px; outline: none; }
+        
+        .send-action-btn { align-self: flex-end; background: #64ffda; color: #0a192f; padding: 10px 25px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; }
+        .close-compose { cursor: pointer; color: #8892b0; font-size: 1.2rem; }
+
+        /* STILE SWEETALERT */
+        div:where(.swal2-container) div:where(.swal2-popup) { background: #112240 !important; border: 1px solid #233554; color: #ccd6f6; }
+        div:where(.swal2-title) { color: #e6f1ff !important; }
+
+        /* --- STILE LETTORE MAIL MIGLIORATO --- */
+.mail-reader {
+    flex: 1; padding: 0; display: none; flex-direction: column;
+    background-color: #0a192f;
+}
+
+/* Header della mail aperta */
+.reader-header {
+    padding: 30px 40px;
+    border-bottom: 1px solid #233554;
+    background: #112240; /* Sfondo leggermente più chiaro per l'header */
+}
+
+.reader-subject {
+    font-size: 1.8rem; color: #e6f1ff; margin-bottom: 20px; font-weight: 600;
+}
+
+.sender-info {
+    display: flex; align-items: center; gap: 15px;
+}
+
+.avatar-circle {
+    width: 45px; height: 45px; background: #233554; color: #64ffda;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: bold; border: 2px solid #64ffda;
+}
+
+.sender-details { display: flex; flex-direction: column; }
+.sender-name { color: #e6f1ff; font-weight: bold; font-size: 1rem; }
+.sender-email { color: #8892b0; font-size: 0.85rem; }
+.mail-timestamp { margin-left: auto; color: #8892b0; font-size: 0.9rem; }
+
+/* Barra Azioni (Rispondi, Inoltra...) */
+.action-bar {
+    padding: 15px 40px; border-bottom: 1px solid #233554;
+    display: flex; gap: 15px; background: #0a192f;
+}
+
+.action-btn {
+    background: transparent; border: 1px solid #233554; color: #8892b0;
+    padding: 8px 15px; border-radius: 5px; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
+}
+.action-btn:hover { border-color: #64ffda; color: #64ffda; background: rgba(100,255,218,0.05); }
+.action-btn.delete:hover { border-color: #ff5f5f; color: #ff5f5f; background: rgba(255,95,95,0.05); }
+
+/* Corpo della mail */
+.reader-body {
+    padding: 40px; color: #ccd6f6; line-height: 1.8; font-size: 1.05rem;
+    white-space: pre-wrap; flex: 1; overflow-y: auto;
+}
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="app-logo"><i class="fa-solid fa-envelope-open-text"></i> Internal Mail</div>
+        <a href="portale.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Torna al Portale</a>
+        
+        <button class="compose-btn" onclick="openCompose()"><i class="fa-solid fa-pen"></i> Scrivi</button>
+
+        <div class="menu-item active" onclick="loadMailbox('inbox')" id="btnInbox">
+            <i class="fa-solid fa-inbox"></i> In Arrivo
+            <span class="badge" id="badgeInbox">0</span>
+        </div>
+        <div class="menu-item" onclick="loadMailbox('sent')" id="btnSent">
+            <i class="fa-regular fa-paper-plane"></i> Inviata
+        </div>
+    </div>
+
+    <div class="main-area">
+        
+        <div class="mail-list" id="mailListContainer">
+            <div class="list-header" id="listTitle">Posta in Arrivo</div>
+            <div id="mailListContent">
+                <div style="padding:20px; text-align:center; color:#8892b0;">Caricamento...</div>
+            </div>
+        </div>
+
+        <div class="mail-reader" id="mailReader">
+    
+        <div class="reader-header">
+        <div class="reader-subject" id="readSubject">Oggetto Mail</div>
+        
+        <div class="sender-info">
+            <div class="avatar-circle" id="avatarInitials">A</div>
+            <div class="sender-details">
+                <span class="sender-name" id="readFrom">Mittente</span>
+                <span class="sender-email" id="readEmail">email@cri.it</span>
+            </div>
+            <div class="mail-timestamp" id="readDate">Oggi, 12:00</div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="action-btn" onclick="replyEmail()">
+            <i class="fa-solid fa-reply"></i> Rispondi
+        </button>
+        <button class="action-btn" onclick="forwardEmail()">
+            <i class="fa-solid fa-share"></i> Inoltra
+        </button>
+        <button class="action-btn delete" onclick="deleteEmail()">
+            <i class="fa-solid fa-trash"></i> Elimina
+        </button>
+    </div>
+
+    <div class="reader-body" id="readBody">
+        Testo della mail...
+    </div>
+</div>
+
+        <div class="empty-state" id="emptyState">
+            <i class="fa-regular fa-envelope"></i>
+            <p>Seleziona una mail per leggerla</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="composeModal">
+        <div class="compose-box">
+            <div class="compose-header">
+                <span style="color:#e6f1ff; font-weight:bold;">Nuovo Messaggio</span>
+                <i class="fa-solid fa-xmark close-compose" onclick="closeCompose()"></i>
+            </div>
+            <div class="compose-body">
+                <input type="email" id="toEmail" class="c-input" placeholder="A: email@collega.it">
+                <input type="text" id="subject" class="c-input" placeholder="Oggetto">
+                <textarea id="messageBody" class="c-textarea" placeholder="Scrivi qui il tuo messaggio..."></textarea>
+                <button class="send-action-btn" onclick="inviaMail()">Invia <i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // CONFIGURAZIONE FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyD1LnDnFa6Yr0y2ZA1BrnGhjxGW4TrNjm0",
+        authDomain: "db--medici.firebaseapp.com",
+        projectId: "db--medici",
+        storageBucket: "db--medici.firebasestorage.app",
+        messagingSenderId: "1036578434966",
+        appId: "1:1036578434966:web:f7efe660bd2a744a99b7b7",
+        measurementId: "G-SXQDDFW294",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUserEmail = "";
+    let currentMode = 'inbox'; // 'inbox' o 'sent'
+    
+    // Variabili per gestire la mail attualmente aperta
+    let currentOpenMailId = null;
+    let currentOpenMailData = null;
+
+    // AUTH & CARICAMENTO INIZIALE
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                currentUserEmail = userDoc.data().email; 
+            } else {
+                currentUserEmail = user.email;
+            }
+            loadMailbox('inbox');
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+
+    // --- CARICAMENTO LISTA ---
+    window.loadMailbox = async (mode) => {
+        currentMode = mode;
+        const listContent = document.getElementById('mailListContent');
+        const listTitle = document.getElementById('listTitle');
+        const btnInbox = document.getElementById('btnInbox');
+        const btnSent = document.getElementById('btnSent');
+
+        // Reset UI selezione menu
+        btnInbox.classList.remove('active');
+        btnSent.classList.remove('active');
+        if(mode === 'inbox') btnInbox.classList.add('active');
+        else btnSent.classList.add('active');
+
+        // Nascondi lettore se aperto e mostra empty state
+        document.getElementById('mailReader').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'flex';
+
+        listTitle.innerText = mode === 'inbox' ? "Posta in Arrivo" : "Posta Inviata";
+        listContent.innerHTML = '<div style="padding:20px; text-align:center; color:#8892b0;">Aggiornamento...</div>';
+
+        try {
+            let q;
+            if (mode === 'inbox') {
+                q = query(collection(db, "mail_interne"), where("destinatario", "==", currentUserEmail), orderBy("data", "desc"));
+            } else {
+                q = query(collection(db, "mail_interne"), where("mittente", "==", currentUserEmail), orderBy("data", "desc"));
+            }
+
+            const snapshot = await getDocs(q);
+            listContent.innerHTML = "";
+
+            if (snapshot.empty) {
+                listContent.innerHTML = '<div style="padding:20px; text-align:center; color:#8892b0;">Nessun messaggio.</div>';
+                return;
+            }
+
+            snapshot.forEach(docSnap => {
+                const mail = docSnap.data();
+                const dateObj = mail.data ? mail.data.toDate() : new Date();
+                const dateStr = dateObj.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' });
+                
+                const isUnread = (mode === 'inbox' && !mail.letto);
+                const unreadClass = isUnread ? 'unread' : '';
+                const senderLabel = mode === 'inbox' ? mail.mittente : `A: ${mail.destinatario}`;
+
+                const item = document.createElement('div');
+                item.className = `mail-item ${unreadClass}`;
+                item.innerHTML = `
+                    <div class="mail-sender">
+                        <span>${senderLabel.split('@')[0]}</span>
+                        <span class="mail-date">${dateStr}</span>
+                    </div>
+                    <div class="mail-subject">${mail.oggetto}</div>
+                    <div class="mail-preview">${mail.testo}</div>
+                `;
+                
+                item.onclick = () => openMail(docSnap.id, mail, item);
+                listContent.appendChild(item);
+            });
+
+        } catch (error) {
+            console.error(error);
+            if(error.message.includes("index")) {
+                alert("Necessario creare indice Firestore. Apri la console per il link.");
+            }
+        }
+    };
+
+    // --- APERTURA MAIL (NUOVA VERSIONE) ---
+    window.openMail = async (id, mail, element) => {
+        // 1. Salva stato corrente
+        currentOpenMailId = id;
+        currentOpenMailData = mail;
+
+        // 2. UI Toggle
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('mailReader').style.display = 'flex';
+
+        // 3. Calcola chi mostrare (Se Inviata -> mostro Destinatario, Se Inbox -> mostro Mittente)
+        const counterparty = currentMode === 'inbox' ? mail.mittente : mail.destinatario;
+        const displayName = counterparty.split('@')[0].replace('.', ' ').toUpperCase();
+        
+        // 4. Popola Header
+        document.getElementById('readSubject').innerText = mail.oggetto;
+        document.getElementById('avatarInitials').innerText = displayName.charAt(0); // Prima lettera
+        document.getElementById('readFrom').innerText = displayName;
+        document.getElementById('readEmail').innerText = counterparty;
+        
+        const dateObj = mail.data ? mail.data.toDate() : new Date();
+        document.getElementById('readDate').innerText = dateObj.toLocaleString('it-IT', { dateStyle: 'long', timeStyle: 'short' });
+        
+        document.getElementById('readBody').innerText = mail.testo;
+
+        // 5. Segna come letto
+        if (currentMode === 'inbox' && !mail.letto) {
+            if(element) element.classList.remove('unread');
+            await updateDoc(doc(db, "mail_interne", id), { letto: true });
+        }
+    };
+
+    // --- NUOVE FUNZIONI AZIONI (Rispondi, Inoltra, Elimina) ---
+    
+    window.replyEmail = () => {
+        if (!currentOpenMailData) return;
+        // Rispondi al mittente originale
+        const recipient = currentOpenMailData.mittente; 
+        const subject = `Re: ${currentOpenMailData.oggetto}`;
+        const quote = `\n\n\n------------------\nIl ${new Date().toLocaleDateString()} ${recipient} ha scritto:\n${currentOpenMailData.testo}`;
+        
+        openCompose(recipient, subject, quote);
+    };
+
+    window.forwardEmail = () => {
+        if (!currentOpenMailData) return;
+        // Inoltra (destinatario vuoto)
+        const subject = `Fwd: ${currentOpenMailData.oggetto}`;
+        const quote = `\n\n\n------------------\nMessaggio Inoltrato:\n${currentOpenMailData.testo}`;
+        
+        openCompose("", subject, quote);
+    };
+
+    window.deleteEmail = async () => {
+        if (!currentOpenMailId) return;
+
+        const confirm = await Swal.fire({
+            title: 'Eliminare definitivamente?',
+            text: "Non potrai recuperare questa mail.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sì, elimina',
+            cancelButtonText: 'Annulla',
+            background: '#112240', color: '#fff'
+        });
+
+        if (confirm.isConfirmed) {
+            try {
+                await deleteDoc(doc(db, "mail_interne", currentOpenMailId));
+                Swal.fire({
+                    title:'Eliminata!', icon:'success', timer: 1500, showConfirmButton: false,
+                    background: '#112240', color: '#fff'
+                });
+                
+                // Ricarica la lista per far sparire la mail eliminata
+                loadMailbox(currentMode);
+            } catch (e) {
+                console.error(e);
+                Swal.fire("Errore", "Impossibile eliminare", "error");
+            }
+        }
+    };
+
+    // --- INVIO MAIL ---
+    window.inviaMail = async () => {
+        const to = document.getElementById('toEmail').value.trim();
+        const subject = document.getElementById('subject').value.trim();
+        const body = document.getElementById('messageBody').value.trim();
+
+        if (!to || !subject || !body) {
+            Swal.fire("Errore", "Compila tutti i campi", "warning");
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, "mail_interne"), {
+                mittente: currentUserEmail,
+                destinatario: to,
+                oggetto: subject,
+                testo: body,
+                data: serverTimestamp(),
+                letto: false
+            });
+
+            closeCompose();
+            Swal.fire({
+                icon: 'success', title: 'Inviata!', toast: true, position: 'top-end', 
+                showConfirmButton: false, timer: 2000, background: '#112240', color: '#fff'
+            });
+            
+            if (currentMode === 'sent') loadMailbox('sent');
+
+        } catch (e) {
+            Swal.fire("Errore invio", e.message, "error");
+        }
+    };
+
+    // --- GESTIONE MODALE (Aggiornata con parametri) ---
+    window.openCompose = (to = "", sub = "", body = "") => {
+        document.getElementById('toEmail').value = to;
+        document.getElementById('subject').value = sub;
+        document.getElementById('messageBody').value = body;
+        document.getElementById('composeModal').style.display = 'flex';
+    };
+    
+    window.closeCompose = () => {
+        document.getElementById('composeModal').style.display = 'none';
+    };
+
+</script>
+</body>
+</html>

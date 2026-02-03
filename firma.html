@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generatore Firma Elettronica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- STILE GLOBALE (uguale al tuo portale) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0a192f; color: #ccd6f6; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+        /* --- CARD DEL GENERATORE --- */
+        .signature-card {
+            background: #112240;
+            width: 800px;
+            padding: 40px;
+            border-radius: 10px;
+            border: 1px solid #233554;
+            display: flex;
+            gap: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Colonna Sinistra: Input */
+        .input-column { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+        
+        h2 { color: #64ffda; margin-bottom: 10px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .subtitle { color: #8892b0; font-size: 0.9rem; margin-bottom: 20px; }
+
+        .form-group label { display: block; color: #e6f1ff; margin-bottom: 8px; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%; padding: 12px; background: #0a192f; border: 1px solid #233554;
+            color: #ccd6f6; border-radius: 4px; outline: none; transition: 0.3s;
+        }
+        .form-group input:focus { border-color: #64ffda; box-shadow: 0 0 5px rgba(100, 255, 218, 0.2); }
+
+        /* Colonna Destra: Anteprima */
+        .preview-column { 
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: #0a192f; border-radius: 8px; border: 2px dashed #233554; padding: 20px;
+            position: relative;
+        }
+
+        /* Canvas (dove disegniamo la firma) */
+        canvas {
+            max-width: 100%;
+            height: auto;
+            /* Mettiamo uno sfondo bianco leggero SOLO nell'anteprima per vedere bene la firma scura */
+            background-color: #ffffff; 
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .btn-download {
+            background: #64ffda; color: #0a192f; padding: 12px 25px; border: none;
+            border-radius: 5px; font-weight: bold; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; transition: 0.3s; width: 100%; justify-content: center;
+        }
+        .btn-download:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        .back-btn {
+            position: absolute; top: 20px; left: 20px; color: #8892b0; text-decoration: none;
+            display: flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: 0.2s;
+        }
+        .back-btn:hover { color: #64ffda; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Torna alla Dashboard</a>
+
+    <div class="signature-card">
+        <div class="input-column">
+            <div>
+                <h2><i class="fa-solid fa-file-signature"></i> Firma Digitale</h2>
+                <p class="subtitle">Compila i dati per generare il tuo timbro elettronico PNG.</p>
+            </div>
+
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="nome" placeholder="Es. Mario" oninput="generateSignature()">
+            </div>
+            <div class="form-group">
+                <label>Cognome</label>
+                <input type="text" id="cognome" placeholder="Es. Rossi" oninput="generateSignature()">
+            </div>
+            <div class="form-group">
+                <label>Grado / Ruolo</label>
+                <input type="text" id="grado" placeholder="Es. Volontario Soccorritore" oninput="generateSignature()">
+            </div>
+            
+            <button class="btn-download" onclick="downloadSignature()">
+                <i class="fa-solid fa-download"></i> Scarica PNG
+            </button>
+        </div>
+
+        <div class="preview-column">
+            <p style="color:#8892b0; margin-bottom:10px; font-size:0.8rem;">Anteprima (Sfondo sarà trasparente)</p>
+            <canvas id="sigCanvas" width="500" height="250"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('sigCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Funzione principale che disegna
+        function generateSignature() {
+            const nome = document.getElementById('nome').value.trim() || "Nome";
+            const cognome = document.getElementById('cognome').value.trim() || "Cognome";
+            const grado = document.getElementById('grado').value.trim() || "RUOLO";
+            const date = new Date().toLocaleDateString('it-IT');
+
+            // 1. Pulisci il canvas (così lo sfondo è trasparente)
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Disegna un bordo (stile timbro) - Opzionale
+            ctx.strokeStyle = "#003366"; // Blu scuro professionale
+            ctx.lineWidth = 2;
+            ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+            // 3. Intestazione piccola
+            ctx.fillStyle = "#555";
+            ctx.font = "14px 'Montserrat'";
+            ctx.textAlign = "center";
+            ctx.fillText("FIRMATO DIGITALMENTE DA:", canvas.width / 2, 50);
+
+            // 4. Nome e Cognome (Stile Firma a mano)
+            ctx.fillStyle = "#002244"; // Blu molto scuro (inchiostro)
+            ctx.font = "bold 48px 'Dancing Script'"; // Font corsivo
+            ctx.fillText(`${nome} ${cognome}`, canvas.width / 2, 110);
+
+            // 5. Linea separatrice
+            ctx.beginPath();
+            ctx.moveTo(100, 130);
+            ctx.lineTo(400, 130);
+            ctx.strokeStyle = "#ccc";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // 6. Grado / Ruolo (Stampatello professionale)
+            ctx.fillStyle = "#333";
+            ctx.font = "600 18px 'Montserrat'";
+            ctx.fillText(grado.toUpperCase(), canvas.width / 2, 160);
+
+            // 7. Data e ID (finto ID per realismo)
+            ctx.fillStyle = "#777";
+            ctx.font = "12px 'Montserrat'";
+            ctx.fillText(`Data: ${date} - ID: CRI-${Math.floor(Math.random()*10000)}`, canvas.width / 2, 200);
+        }
+
+        // Funzione Download
+        function downloadSignature() {
+            // Crea un link temporaneo
+            const link = document.createElement('a');
+            link.download = `Firma_${document.getElementById('cognome').value}.png`;
+            // Converte il canvas in immagine PNG
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        // Genera subito una firma di esempio all'avvio
+        window.onload = generateSignature;
+    </script>
+</body>
+</html>

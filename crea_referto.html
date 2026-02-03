@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuovo Referto Medico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+    /* STILE BASE */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: #0a192f; color: #ccd6f6; display: flex; height: 100vh; overflow: hidden; }
+
+    .editor-container { width: 40%; padding: 30px; overflow-y: auto; border-right: 1px solid #233554; display: flex; flex-direction: column; gap: 20px; }
+    .preview-container { width: 60%; background: #555; display: flex; justify-content: center; align-items: flex-start; padding: 40px; overflow-y: auto; }
+
+    h2 { color: #64ffda; margin-bottom: 20px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    .form-section { margin-bottom: 20px; border-bottom: 1px solid #233554; padding-bottom: 20px; }
+    .form-section h3 { color: #e6f1ff; font-size: 1.1rem; margin-bottom: 15px; }
+    
+    .row { display: flex; gap: 15px; margin-bottom: 15px; }
+    .half { flex: 1; }
+    
+    label { display: block; color: #8892b0; font-size: 0.85rem; margin-bottom: 5px; }
+    
+    /* INPUT GENERALI (Testo, Data, ecc) */
+    input, select, textarea { 
+        width: 100%; 
+        padding: 10px; 
+        background: #112240; 
+        border: 1px solid #233554; 
+        color: #fff; 
+        border-radius: 4px; 
+        outline: none; 
+    }
+    input:focus, textarea:focus, select:focus { border-color: #64ffda; }
+    textarea { resize: vertical; height: 80px; }
+
+    /* --- CORREZIONE CHECKBOX (Quella che serve a te) --- */
+    .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-top: 5px; }
+    
+    .checkbox-item { 
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
+        cursor: pointer; 
+        color: #ccd6f6;
+        font-size: 0.95rem;
+    }
+
+    /* Qui forziamo il quadratino a restare piccolo e non allargarsi */
+    input[type="checkbox"] {
+        width: auto !important; /* Importante: non usare 100% */
+        margin: 0;
+        transform: scale(1.2); /* Lo rendiamo leggermente più grande */
+        cursor: pointer;
+    }
+    /* ---------------------------------------------------- */
+
+    .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-action {
+        flex: 1; padding: 15px; border: none; font-weight: bold; font-size: 1rem; cursor: pointer; border-radius: 5px;
+        display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.2s;
+    }
+    .btn-save { background: #64ffda; color: #0a192f; }
+    .btn-download { background: #112240; border: 1px solid #64ffda; color: #64ffda; }
+    .btn-action:hover { opacity: 0.9; }
+    .back-link { color: #8892b0; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+    .back-link:hover { color: #64ffda; }
+
+    /* A4 PAGE STYLES */
+    .a4-page {
+        background: white; width: 210mm; min-height: 297mm; padding: 20mm;
+        color: #000; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        font-family: 'Montserrat', sans-serif; position: relative;
+    }
+    .doc-header { text-align: center; margin-bottom: 30px; }
+    .doc-logo { color: #cc0000; font-size: 3rem; margin-bottom: 10px; }
+    .doc-title { color: #cc0000; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; }
+    .patient-data { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem; margin-bottom: 30px; border-bottom: 2px solid #cc0000; padding-bottom: 20px; }
+    .data-row span { font-weight: bold; color: #333; }
+    .section-title { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #003366; font-size: 1rem; margin-top: 20px; margin-bottom: 8px; }
+    .section-content { font-size: 0.95rem; line-height: 1.5; color: #444; margin-left: 28px; white-space: pre-wrap; }
+    .footer-sign { margin-top: 60px; text-align: right; }
+    .real-signature { font-family: 'Dancing Script', cursive; font-size: 2rem; color: #002244; margin: 10px 0; }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb { background: #233554; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+    <div class="editor-container">
+        <a href="referti.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Torna all'Archivio</a>
+        <h2><i class="fa-solid fa-pen-to-square"></i> Compila Referto</h2>
+
+        <div class="form-section" style="border-left: 4px solid #64ffda; padding-left: 15px;">
+            <label style="color: #64ffda; font-weight: bold;">CATEGORIA ARCHIVIO</label>
+            <select id="inp_categoria">
+                <option value="ematici">Esami Ematici</option>
+                <option value="radiologia">Radiologia & RX</option>
+                <option value="visite">Visite Mediche</option>
+                <option value="verbali">Verbali Intervento</option>
+                <option value="certificati">Certificati</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <h3>Dati Paziente</h3>
+            <div class="row">
+                <div class="half"><label>Nome</label><input type="text" id="inp_nome" oninput="updateDoc()"></div>
+                <div class="half"><label>Cognome</label><input type="text" id="inp_cognome" oninput="updateDoc()"></div>
+            </div>
+            <div class="row">
+                <div class="half"><label>Data Nascita</label><input type="date" id="inp_dob" oninput="updateDoc()"></div>
+                <div class="half"><label>Telefono</label><input type="text" id="inp_tel" oninput="updateDoc()"></div>
+            </div>
+            <div class="row">
+                <div class="half"><label>Arrivo</label><input type="time" id="inp_arrivo" oninput="updateDoc()"></div>
+                <div class="half"><label>Dimissione</label><input type="time" id="inp_uscita" oninput="updateDoc()"></div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Intervento</h3>
+            <label>Motivo</label><textarea id="inp_motivo" oninput="updateDoc()"></textarea>
+            <label style="margin-top:10px">Diagnosi</label><textarea id="inp_diagnosi" style="height:120px" oninput="updateDoc()"></textarea>
+        </div>
+
+        <div class="form-section">
+            <h3>Esami</h3>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" value="Elettrocardiogramma (ECG)" onchange="updateDoc()"> ECG</label>
+                <label class="checkbox-item"><input type="checkbox" value="Parametri Vitali" onchange="updateDoc()"> Parametri Vitali</label>
+                <label class="checkbox-item"><input type="checkbox" value="Stick Glicemico" onchange="updateDoc()"> Stick Glicemico</label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Terapie</h3>
+            <label>Farmaci</label><textarea id="inp_farmaci" oninput="updateDoc()"></textarea>
+            <label style="margin-top:10px">Prescrizione</label><textarea id="inp_prescrizione" oninput="updateDoc()"></textarea>
+        </div>
+
+        <div class="form-section">
+            <h3>Firma Operatore</h3>
+            <div class="row">
+                <div class="half"><label>Nome Dottore</label><input type="text" id="inp_doc_nome" oninput="updateDoc()"></div>
+                <div class="half"><label>Cognome Dottore</label><input type="text" id="inp_doc_cognome" oninput="updateDoc()"></div>
+            </div>
+            <div class="row">
+                <div class="half"><label>Grado</label><input type="text" id="inp_grado" oninput="updateDoc()"></div>
+                <div class="half"><label>Specializzazione</label><input type="text" id="inp_spec" oninput="updateDoc()"></div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-action btn-download" onclick="scaricaPDF()">
+                <i class="fa-solid fa-download"></i> PDF
+            </button>
+            <button class="btn-action btn-save" onclick="salvaReferto()">
+                <i class="fa-solid fa-floppy-disk"></i> SALVA
+            </button>
+        </div>
+    </div>
+
+    <div class="preview-container">
+        <div class="a4-page" id="element-to-print">
+            <div class="doc-header">
+                <div class="doc-logo"><i class="fa-solid fa-star-of-life"></i></div>
+                <div class="doc-title">Croce Rossa Italiana</div>
+                <div style="font-size:0.8rem; color:#666;">Comitato di Esempio - Referto di Intervento</div>
+            </div>
+            <div class="patient-data">
+                <div class="data-row"><span>Paziente:</span> <span id="out_paziente">Nome Cognome</span></div>
+                <div class="data-row"><span>Data:</span> <span id="out_dataoggi">--/--/----</span></div>
+                <div class="data-row"><span>Nato il:</span> <span id="out_dob">--/--/----</span></div>
+                <div class="data-row"><span>Telefono:</span> <span id="out_tel">---</span></div>
+                <div class="data-row"><span>Arrivo:</span> <span id="out_arrivo">--:--</span></div>
+                <div class="data-row"><span>Dimissione:</span> <span id="out_uscita">--:--</span></div>
+            </div>
+            <div class="section-title"><i class="fa-solid fa-truck-medical"></i> Motivo dell'intervento</div>
+            <div class="section-content" id="out_motivo">...</div>
+            <div class="section-title"><i class="fa-solid fa-clipboard-list"></i> Diagnosi e Descrizione</div>
+            <div class="section-content" id="out_diagnosi">...</div>
+            <div class="section-title"><i class="fa-solid fa-flask"></i> Esami Diagnostici</div>
+            <div class="section-content" id="out_esami">- Nessuno selezionato</div>
+            <div class="section-title"><i class="fa-solid fa-pills"></i> Farmaci Somministrati</div>
+            <div class="section-content" id="out_farmaci">-</div>
+            <div class="section-title"><i class="fa-solid fa-user-doctor"></i> Prescrizione Medica</div>
+            <div class="section-content" id="out_prescrizione">-</div>
+            <div class="footer-sign">
+                <div class="sign-role" id="out_ruolo_completo">Grado - Specializzazione</div>
+                <div class="real-signature" id="out_firma">Firma</div>
+                <div style="border-top:1px solid #ccc; width:200px; margin-left:auto; margin-top:5px;"></div>
+                <div style="font-size:0.7rem; color:#999;">Firma dell'Operatore</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('out_dataoggi').innerText = new Date().toLocaleDateString('it-IT');
+
+        function updateDoc() {
+            const getVal = (id) => document.getElementById(id).value;
+            const setTxt = (id, txt) => document.getElementById(id).innerText = txt;
+
+            setTxt('out_paziente', (getVal('inp_nome')||"Nome") + " " + (getVal('inp_cognome')||"Cognome"));
+            setTxt('out_dob', getVal('inp_dob') ? new Date(getVal('inp_dob')).toLocaleDateString('it-IT') : "--/--/----");
+            setTxt('out_tel', getVal('inp_tel')||"---");
+            setTxt('out_arrivo', getVal('inp_arrivo')||"--:--");
+            setTxt('out_uscita', getVal('inp_uscita')||"--:--");
+            setTxt('out_motivo', getVal('inp_motivo')||"...");
+            setTxt('out_diagnosi', getVal('inp_diagnosi')||"...");
+            setTxt('out_farmaci', getVal('inp_farmaci')||"-");
+            setTxt('out_prescrizione', getVal('inp_prescrizione')||"-");
+            
+            let esamiText = "";
+            document.querySelectorAll('.checkbox-group input:checked').forEach(cb => esamiText += "• " + cb.value + "\n");
+            setTxt('out_esami', esamiText || "- Nessuno selezionato");
+
+            const dNome = getVal('inp_doc_nome'), dCognome = getVal('inp_doc_cognome');
+            setTxt('out_ruolo_completo', (getVal('inp_grado')||"Grado") + (getVal('inp_spec') ? " - " + getVal('inp_spec') : ""));
+            setTxt('out_firma', (dNome||"Firma") + " " + (dCognome||"Medico"));
+        }
+
+        function scaricaPDF() {
+            const el = document.getElementById('element-to-print');
+            const nomeFile = `Referto_${document.getElementById('inp_cognome').value || 'Paziente'}.pdf`;
+            el.style.boxShadow = 'none';
+            html2pdf().set({ margin:0, filename: nomeFile, image:{type:'jpeg', quality:0.98}, html2canvas:{scale:2}, jsPDF:{unit:'mm', format:'a4'} }).from(el).save().then(() => el.style.boxShadow = '0 0 20px rgba(0,0,0,0.5)');
+        }
+
+        // --- SALVATAGGIO COMPLETO ---
+        function salvaReferto() {
+            const getVal = (id) => document.getElementById(id).value;
+            
+            // Raccogliamo TUTTI i dati
+            const datiCompleti = {
+                id: Date.now(),
+                dataCreazione: new Date().toLocaleDateString('it-IT'),
+                categoria: getVal('inp_categoria'),
+                nome: getVal('inp_nome'),
+                cognome: getVal('inp_cognome'),
+                dob: getVal('inp_dob'),
+                tel: getVal('inp_tel'),
+                arrivo: getVal('inp_arrivo'),
+                uscita: getVal('inp_uscita'),
+                motivo: getVal('inp_motivo'),
+                diagnosi: getVal('inp_diagnosi'),
+                farmaci: getVal('inp_farmaci'),
+                prescrizione: getVal('inp_prescrizione'),
+                doc_nome: getVal('inp_doc_nome'),
+                doc_cognome: getVal('inp_doc_cognome'),
+                grado: getVal('inp_grado'),
+                spec: getVal('inp_spec'),
+                // Salviamo gli esami come un array (lista)
+                esami: Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value)
+            };
+
+            if(!datiCompleti.nome) { alert("Inserisci almeno il Nome del paziente."); return; }
+
+            let archivio = JSON.parse(localStorage.getItem('archivioReferti')) || [];
+            archivio.push(datiCompleti);
+            localStorage.setItem('archivioReferti', JSON.stringify(archivio));
+
+            alert("Referto Salvato in Archivio!");
+            window.location.href = "referti.html";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Codice Fiscale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- STILE DASHBOARD --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #0a192f; color: #ccd6f6; height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+        .cf-container {
+            background: #112240; width: 900px; padding: 40px; border-radius: 10px;
+            border: 1px solid #233554; display: flex; gap: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Colonna Input */
+        .input-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        
+        .row { display: flex; gap: 15px; }
+        .half { flex: 1; }
+
+        label { font-size: 0.85rem; color: #8892b0; margin-bottom: 5px; display: block; }
+        input, select {
+            width: 100%; padding: 12px; background: #0a192f; border: 1px solid #233554;
+            color: #ccd6f6; border-radius: 4px; outline: none; transition: 0.2s;
+        }
+        input:focus, select:focus { border-color: #64ffda; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+        .btn-calc {
+            background: #64ffda; color: #0a192f; border: none; padding: 12px; margin-top: 10px;
+            font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-calc:hover { opacity: 0.9; }
+
+        /* Colonna Risultato */
+        .result-col {
+            flex: 1; background: #0a192f; border-radius: 8px; border: 2px dashed #233554;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .cf-display {
+            font-size: 2.5rem; font-family: 'Courier New', monospace; font-weight: bold;
+            color: #64ffda; letter-spacing: 5px; margin: 20px 0; text-shadow: 0 0 10px rgba(100,255,218,0.3);
+        }
+        .copy-btn {
+            background: transparent; border: 1px solid #64ffda; color: #64ffda;
+            padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
+        }
+        .copy-btn:hover { background: rgba(100,255,218,0.1); }
+
+        .back-btn {
+            position: absolute; top: 20px; left: 20px; color: #8892b0; text-decoration: none;
+            display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
+        }
+        .back-btn:hover { color: #64ffda; }
+
+        /* Suggerimenti Città */
+        #cityList {
+            position: absolute; background: #112240; border: 1px solid #233554;
+            width: 100%; max-height: 150px; overflow-y: auto; z-index: 10; display: none;
+        }
+        .city-option { padding: 10px; cursor: pointer; font-size: 0.9rem; }
+        .city-option:hover { background: #233554; color: #fff; }
+
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
+
+    <div class="cf-container">
+        
+        <div class="input-col">
+            <h2 style="color:#e6f1ff; margin-bottom:10px;"><i class="fa-solid fa-calculator"></i> Dati Paziente</h2>
+            
+            <div class="row">
+                <div class="half">
+                    <label>Cognome</label>
+                    <input type="text" id="surname" placeholder="Rossi">
+                </div>
+                <div class="half">
+                    <label>Nome</label>
+                    <input type="text" id="name" placeholder="Mario">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="half">
+                    <label>Data di Nascita</label>
+                    <input type="date" id="dob">
+                </div>
+                <div class="half">
+                    <label>Sesso</label>
+                    <select id="gender">
+                        <option value="M">Maschio</option>
+                        <option value="F">Femmina</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="position:relative;">
+                <label>Comune di Nascita</label>
+                <input type="text" id="cityInput" placeholder="Inizia a scrivere (es. Milano)..." autocomplete="off">
+                <div id="cityList"></div> <input type="hidden" id="belfioreCode"> </div>
+
+            <button class="btn-calc" onclick="calcolaCF()">
+                <i class="fa-solid fa-gears"></i> Calcola Codice
+            </button>
+        </div>
+
+        <div class="result-col">
+            <div style="color:#8892b0; font-size:0.9rem;">CODICE FISCALE GENERATO</div>
+            <div class="cf-display" id="resultCF">-------</div>
+            <button class="copy-btn" onclick="copiaCF()">
+                <i class="fa-regular fa-copy"></i> Copia
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. GESTIONE COMUNI (FETCH DATABASE) ---
+        let comuniDatabase = [];
+        
+        // Carichiamo un JSON pubblico con i comuni e i codici Belfiore
+        fetch('https://raw.githubusercontent.com/matteocontrini/comuni-json/master/comuni.json')
+            .then(res => res.json())
+            .then(data => {
+                comuniDatabase = data;
+                console.log("Database Comuni Caricato");
+            });
+
+        const cityInput = document.getElementById('cityInput');
+        const cityList = document.getElementById('cityList');
+        const belfioreField = document.getElementById('belfioreCode');
+
+        // Autocomplete Città
+        cityInput.addEventListener('input', function() {
+            const val = this.value.toLowerCase();
+            cityList.innerHTML = '';
+            if (!val || val.length < 2) { cityList.style.display = 'none'; return; }
+
+            // Cerca comuni
+            const filtered = comuniDatabase.filter(c => c.nome.toLowerCase().startsWith(val)).slice(0, 10);
+            
+            if (filtered.length > 0) {
+                cityList.style.display = 'block';
+                filtered.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'city-option';
+                    div.innerText = c.nome + " (" + c.provincia + ")";
+                    div.onclick = () => {
+                        cityInput.value = c.nome;
+                        belfioreField.value = c.codiceCatastale; // Salva il codice H501
+                        cityList.style.display = 'none';
+                    };
+                    cityList.appendChild(div);
+                });
+            } else {
+                cityList.style.display = 'none';
+            }
+        });
+
+        // --- 2. LOGICA CALCOLO CF ---
+        
+        const months = ['A','B','C','D','E','H','L','M','P','R','S','T'];
+        const vocals = ['A','E','I','O','U'];
+
+        function getConsonants(str) { return str.toUpperCase().replace(/[AEIOU\s]/g, ''); }
+        function getVowels(str) { return str.toUpperCase().replace(/[^AEIOU]/g, ''); }
+
+        function formatCodeName(str, isName) {
+            const cons = getConsonants(str);
+            const vows = getVowels(str);
+            
+            if (isName && cons.length >= 4) {
+                // Per il nome, se 4+ consonanti, prendo 1°, 3°, 4°
+                return cons[0] + cons[2] + cons[3];
+            }
+            
+            // Standard: prime 3 cons + vocali + X se manca roba
+            let code = (cons + vows + "XXX").substring(0, 3);
+            return code;
+        }
+
+        // Tabelle per Carattere di Controllo (Ultima Lettera)
+        const oddValues = {
+            '0':1, '1':0, '2':5, '3':7, '4':9, '5':13, '6':15, '7':17, '8':19, '9':21,
+            'A':1, 'B':0, 'C':5, 'D':7, 'E':9, 'F':13, 'G':15, 'H':17, 'I':19, 'J':21,
+            'K':2, 'L':4, 'M':18, 'N':20, 'O':11, 'P':3, 'Q':6, 'R':8, 'S':12, 'T':14,
+            'U':16, 'V':10, 'W':22, 'X':25, 'Y':24, 'Z':23
+        };
+        const evenValues = {
+            '0':0, '1':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9,
+            'A':0, 'B':1, 'C':2, 'D':3, 'E':4, 'F':5, 'G':6, 'H':7, 'I':8, 'J':9,
+            'K':10, 'L':11, 'M':12, 'N':13, 'O':14, 'P':15, 'Q':16, 'R':17, 'S':18, 'T':19,
+            'U':20, 'V':21, 'W':22, 'X':23, 'Y':24, 'Z':25
+        };
+        const controlChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        function calcolaCIN(parziale) {
+            let sum = 0;
+            for (let i = 0; i < 15; i++) {
+                const char = parziale[i];
+                if ((i + 1) % 2 !== 0) { // Posizione dispari (1, 3, 5...) ma array parte da 0
+                    sum += oddValues[char];
+                } else {
+                    sum += evenValues[char];
+                }
+            }
+            return controlChars[sum % 26];
+        }
+
+        function calcolaCF() {
+            const cognome = document.getElementById('surname').value.trim();
+            const nome = document.getElementById('name').value.trim();
+            const data = document.getElementById('dob').value;
+            const sesso = document.getElementById('gender').value;
+            const codiceCatastale = document.getElementById('belfioreCode').value;
+
+            if(!cognome || !nome || !data || !codiceCatastale) {
+                alert("Compila tutti i campi e seleziona il comune dalla lista!");
+                return;
+            }
+
+            // 1. Cognome (3 lettere)
+            const cCode = formatCodeName(cognome, false);
+
+            // 2. Nome (3 lettere)
+            const nCode = formatCodeName(nome, true);
+
+            // 3. Anno, Mese, Giorno
+            const dObj = new Date(data);
+            const yCode = dObj.getFullYear().toString().substr(2, 2);
+            const mCode = months[dObj.getMonth()];
+            let dVal = dObj.getDate();
+            if (sesso === 'F') dVal += 40;
+            const dCode = dVal < 10 ? "0" + dVal : dVal.toString();
+
+            // 4. Unione parziale
+            let cf = (cCode + nCode + yCode + mCode + dCode + codiceCatastale).toUpperCase();
+
+            // 5. Calcolo Carattere di Controllo (CIN)
+            const cin = calcolaCIN(cf);
+            
+            // Risultato Finale
+            const finalCF = cf + cin;
+            document.getElementById('resultCF').innerText = finalCF;
+        }
+
+        function copiaCF() {
+            const text = document.getElementById('resultCF').innerText;
+            if(text === '-------') return;
+            navigator.clipboard.writeText(text);
+            alert("Codice copiato!");
+        }
+
+    </script>
+</body>
+</html>
