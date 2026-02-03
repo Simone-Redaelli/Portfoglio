@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organigramma CRI - Gerarchia</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* STILE BASE */
+        body { background-color: #0a192f; color: #ccd6f6; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; }
+        .container { width: 90%; max-width: 1400px; margin: 40px auto; padding-bottom: 50px; }
+
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #233554; padding-bottom: 20px; }
+        .header-bar h2 { font-size: 2rem; color: #e6f1ff; text-transform: uppercase; letter-spacing: 2px; border-bottom: 3px solid #64ffda; }
+        .back-btn { color: #64ffda; text-decoration: none; font-size: 1.1rem; padding: 10px 20px; border: 1px solid rgba(100, 255, 218, 0.3); border-radius: 5px; transition: all 0.3s; }
+        .back-btn:hover { background: rgba(100, 255, 218, 0.1); }
+
+        #admin-controls { display: none; background: #112240; padding: 30px; border-radius: 10px; margin-bottom: 50px; border: 1px solid #233554; }
+        #admin-controls h3 { color: #64ffda; margin-top: 0; border-bottom: 1px solid #233554; padding-bottom: 10px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .span-3 { grid-column: span 3; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-size: 0.9rem; color: #a8b2d1; font-weight: 600; }
+        .input-group input, .input-group textarea { background: rgba(255, 255, 255, 0.05); border: 1px solid #233554; color: #fff; padding: 12px; border-radius: 6px; font-size: 1rem; outline: none; }
+        button.add-btn { grid-column: span 3; background-color: #64ffda; color: #0a192f; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1.1rem; margin-top: 10px; }
+        button.add-btn:hover { opacity: 0.9; }
+
+        .search-container { margin-bottom: 30px; position: relative; }
+        .search-input { width: 100%; padding: 15px 15px 15px 50px; background-color: #112240; border: 1px solid #233554; color: #fff; font-size: 1.1rem; border-radius: 50px; outline: none; box-sizing: border-box; }
+        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #64ffda; }
+
+        .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .staff-card { background: #112240; padding: 20px; border-radius: 8px; border-left: 5px solid #ff5f5f; position: relative; cursor: pointer; transition: transform 0.3s; display: flex; flex-direction: column; gap: 5px; }
+        .staff-card:hover { transform: translateY(-5px); background: #172a45; }
+        .staff-role { color: #64ffda; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .staff-name { font-size: 1.5rem; color: #e6f1ff; font-weight: bold; }
+        .staff-email { color: #8892b0; font-size: 0.9rem; font-style: italic; }
+        .delete-btn { position: absolute; top: 15px; right: 15px; color: #fff; background: transparent; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
+        .delete-btn:hover { color: #ff5f5f; }
+
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); justify-content: center; align-items: center; }
+        .modal-content { background-color: #112240; border: 1px solid #64ffda; padding: 30px; border-radius: 12px; width: 90%; max-width: 700px; color: #ccd6f6; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 25px; cursor: pointer; color: #8892b0; transition: 0.3s; }
+        .close-modal:hover { color: #fff; }
+        
+        .modal-header-role { color: #64ffda; font-size: 1rem; text-transform: uppercase; margin-bottom: 5px; }
+        .modal-header-name { font-size: 2.5rem; color: white; margin: 0 0 20px 0; font-weight: 700; border-bottom: 1px solid #233554; padding-bottom: 20px;}
+        .detail-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .detail-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 6px; border-left: 3px solid #64ffda; }
+        .box-label { display: block; font-size: 0.8rem; color: #a8b2d1; text-transform: uppercase; margin-bottom: 8px; }
+        .box-value { font-size: 1.1rem; color: #fff; font-weight: 500; }
+        .full-width-box { grid-column: span 2; }
+        .alert-box { border-left-color: #ff5f5f; }
+        .alert-label { color: #ff5f5f; }
+
+        .edit-modal-btn { float: right; margin-top: -60px; background: transparent; border: 1px solid #64ffda; color: #64ffda; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: 0.3s; }
+        .edit-lbl { display: block; color: #8892b0; font-size: 0.85rem; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; }
+        .edit-input { width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid #233554; color: white; border-radius: 5px; font-family: inherit; font-size: 1rem; box-sizing: border-box; }
+        .save-edit-btn { background: #64ffda; color: #0a192f; border: none; padding: 12px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-right: 10px;}
+        .cancel-edit-btn { background: transparent; border: 1px solid #8892b0; color: #8892b0; padding: 12px 20px; border-radius: 5px; cursor: pointer; }
+        .edit-actions { margin-top: 25px; display: flex; align-items: center; }
+
+        /* NOTIFICHE SCURE */
+        div:where(.swal2-container) div:where(.swal2-popup) { background: #112240 !important; border: 1px solid #233554; color: #ccd6f6; }
+        div:where(.swal2-title) { color: #e6f1ff !important; }
+        div:where(.swal2-html-container) { color: #8892b0 !important; }
+        .btn-confirm-del { background-color: #ff5f5f !important; color: white !important; }
+        .btn-cancel { background-color: #233554 !important; color: #ccd6f6 !important; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-bar">
+            <a href="portale.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+            <h2><i class="fa-solid fa-sitemap"></i> Organigramma C.R.I.</h2>
+        </div>
+
+        <div id="admin-controls">
+            <h3><i class="fa-solid fa-user-plus"></i> Inserisci Nuovo Personale</h3>
+            <div class="form-grid">
+                <div class="input-group"> <label>Nome</label> <input type="text" id="inNome"> </div>
+                <div class="input-group"> <label>Cognome</label> <input type="text" id="inCognome"> </div>
+                <div class="input-group"> <label>Data di Nascita</label> <input type="date" id="inData"> </div>
+                <div class="input-group span-3"> <label>Grado / Ruolo</label> <input type="text" id="inRuolo"> </div>
+                <div class="input-group span-3"> <label>Email Aziendale</label> <input type="email" id="inEmail"> </div>
+                <div class="input-group span-3"> <label>Reparti</label> <input type="text" id="inReparti"> </div>
+                <div class="input-group span-3"> <label>Patenti & Abilitazioni</label> <input type="text" id="inPatenti"> </div>
+                <div class="input-group span-3"> <label style="color:#ff5f5f;">Note Disciplinari</label> <textarea id="inNote" rows="2"></textarea> </div>
+                <button class="add-btn" id="btnAdd"><i class="fa-solid fa-save"></i> Salva Utente</button>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Cerca...">
+        </div>
+
+        <div id="staff-list" class="staff-grid"></div>
+    </div>
+
+    <div id="staffModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modalDetails"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, getDocs, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1LnDnFa6Yr0y2ZA1BrnGhjxGW4TrNjm0",
+            authDomain: "db--medici.firebaseapp.com",
+            projectId: "db--medici",
+            storageBucket: "db--medici.firebasestorage.app",
+            messagingSenderId: "1036578434966",
+            appId: "1:1036578434966:web:f7efe660bd2a744a99b7b7",
+            measurementId: "G-SXQDDFW294",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const adminControls = document.getElementById('admin-controls');
+        const staffList = document.getElementById('staff-list');
+        const modal = document.getElementById('staffModal');
+        const modalContent = document.getElementById('modalDetails');
+        let isAdmin = false;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists() && userDoc.data().ruolo === "admin") {
+                    isAdmin = true;
+                    adminControls.style.display = "block";
+                }
+                loadPersonale();
+            } else { window.location.href = "login.html"; }
+        });
+
+        async function loadPersonale() {
+            staffList.innerHTML = "";
+            try {
+                const q = query(collection(db, "personale"), orderBy("cognome")); 
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) { staffList.innerHTML = "<p>Nessun membro.</p>"; return; }
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const card = document.createElement('div');
+                    card.className = "staff-card";
+                    card.onclick = (e) => { if (!e.target.closest('.delete-btn')) openModal(data, docSnap.id); };
+                    card.innerHTML = `
+                        ${isAdmin ? `<button onclick="eliminaMembro(event, '${docSnap.id}')" class="delete-btn"><i class="fa-solid fa-trash"></i></button>` : ''}
+                        <div class="staff-role">${data.ruolo}</div>
+                        <div class="staff-name">${data.cognome} ${data.nome}</div>
+                        <div class="staff-email">${data.email || ""}</div>
+                    `;
+                    staffList.appendChild(card);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        document.getElementById('btnAdd').addEventListener('click', async () => {
+            const nome = document.getElementById('inNome').value.trim();
+            const cognome = document.getElementById('inCognome').value.trim();
+            const dataNascita = document.getElementById('inData').value;
+            const ruolo = document.getElementById('inRuolo').value.trim();
+            const email = document.getElementById('inEmail').value.trim();
+            const reparti = document.getElementById('inReparti').value.trim();
+            const patenti = document.getElementById('inPatenti').value.trim();
+            const note = document.getElementById('inNote').value.trim();
+
+            if (nome && cognome && ruolo) {
+                try {
+                    await addDoc(collection(db, "personale"), { nome, cognome, dataNascita, ruolo, email, reparti, patenti, note });
+                    document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+                    Swal.fire({
+                        icon: 'success', title: 'Aggiunto!', text: 'Membro registrato nel DB.',
+                        toast: true, position: 'top-end', showConfirmButton: false, timer: 2000,
+                        background: '#112240', color: '#fff', iconColor: '#64ffda'
+                    });
+                    loadPersonale();
+                } catch (e) { Swal.fire("Errore", e.message, "error"); }
+            } else { Swal.fire("Mancano dati", "Nome, Cognome e Ruolo sono obbligatori.", "warning"); }
+        });
+
+        window.eliminaMembro = async (event, id) => {
+            event.stopPropagation();
+            const result = await Swal.fire({
+                title: 'Eliminare membro?', text: "Questa azione non si può annullare.", icon: 'warning',
+                showCancelButton: true, confirmButtonText: 'Elimina', cancelButtonText: 'Annulla',
+                customClass: { confirmButton: 'btn-confirm-del', cancelButton: 'btn-cancel' },
+                background: '#112240', color: '#e6f1ff', iconColor: '#ff5f5f'
+            });
+
+            if (result.isConfirmed) {
+                await deleteDoc(doc(db, "personale", id));
+                Swal.fire({
+                    icon: 'success', title: 'Cancellato', toast: true, position: 'top-end',
+                    showConfirmButton: false, timer: 1500, background: '#112240', color: '#fff'
+                });
+                loadPersonale();
+            }
+        };
+
+        // --- GESTIONE MODALE ---
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.staff-card').forEach(c => c.style.display = c.innerText.toLowerCase().includes(term) ? "flex" : "none");
+        });
+
+        window.openModal = (data, id) => {
+            const editBtn = isAdmin ? `<button onclick="attivaModifica('${id}')" class="edit-modal-btn"><i class="fa-solid fa-pen-to-square"></i> Modifica</button>` : '';
+            modalContent.innerHTML = `
+                <div id="viewMode_${id}">
+                    ${editBtn}
+                    <div class="modal-header-role">${data.ruolo}</div>
+                    <h2 class="modal-header-name">${data.nome} ${data.cognome}</h2>
+                    <div class="detail-row">
+                        <div class="detail-box"><span class="box-label">Data Nascita</span><div class="box-value">${data.dataNascita || "--/--/----"}</div></div>
+                        <div class="detail-box"><span class="box-label">Email</span><div class="box-value">${data.email || "Non assegnata"}</div></div>
+                        <div class="detail-box full-width-box"><span class="box-label">Reparti</span><div class="box-value">${data.reparti || "Tutti"}</div></div>
+                        <div class="detail-box full-width-box"><span class="box-label">Patenti</span><div class="box-value">${data.patenti || "Nessuna"}</div></div>
+                        <div class="detail-box full-width-box ${data.note ? 'alert-box' : ''}"><span class="box-label ${data.note ? 'alert-label' : ''}">Note Disciplinari</span><div class="box-value">${data.note || "//"}</div></div>
+                    </div>
+                    <div id="hiddenData_${id}" style="display:none;" data-nome="${data.nome}" data-cognome="${data.cognome}" data-nascita="${data.dataNascita}" data-ruolo="${data.ruolo}" data-email="${data.email}" data-reparti="${data.reparti}" data-patenti="${data.patenti}" data-note="${data.note}"></div>
+                </div>`;
+            modal.style.display = "flex";
+        };
+
+        window.attivaModifica = (id) => {
+            const d = document.getElementById(`hiddenData_${id}`).dataset;
+            document.getElementById(`viewMode_${id}`).innerHTML = `
+                <h3 style="color:#64ffda; margin-top:0;">Modifica Scheda</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div><label class="edit-lbl">Nome</label><input id="edNome" class="edit-input" value="${d.nome}"></div>
+                    <div><label class="edit-lbl">Cognome</label><input id="edCognome" class="edit-input" value="${d.cognome}"></div>
+                </div>
+                <label class="edit-lbl">Ruolo</label><input id="edRuolo" class="edit-input" value="${d.ruolo}">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div><label class="edit-lbl">Data Nascita</label><input type="date" id="edNascita" class="edit-input" value="${d.nascita}"></div>
+                    <div><label class="edit-lbl">Email</label><input id="edEmail" class="edit-input" value="${d.email}"></div>
+                </div>
+                <label class="edit-lbl">Reparti</label><input id="edReparti" class="edit-input" value="${d.reparti}">
+                <label class="edit-lbl">Patenti</label><input id="edPatenti" class="edit-input" value="${d.patenti}">
+                <label class="edit-lbl" style="color:#ff5f5f;">Note</label><textarea id="edNote" class="edit-input" rows="2">${d.note}</textarea>
+                <div class="edit-actions"><button onclick="salvaModifiche('${id}')" class="save-edit-btn">Salva</button><button onclick="annullaModifica()" class="cancel-edit-btn">Annulla</button></div>
+            `;
+        };
+
+        window.salvaModifiche = async (id) => {
+            try {
+                await updateDoc(doc(db, "personale", id), {
+                    nome: document.getElementById('edNome').value,
+                    cognome: document.getElementById('edCognome').value,
+                    ruolo: document.getElementById('edRuolo').value,
+                    dataNascita: document.getElementById('edNascita').value,
+                    email: document.getElementById('edEmail').value,
+                    reparti: document.getElementById('edReparti').value,
+                    patenti: document.getElementById('edPatenti').value,
+                    note: document.getElementById('edNote').value
+                });
+                Swal.fire({ icon: 'success', title: 'Aggiornato!', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, background: '#112240', color: '#fff' });
+                modal.style.display = "none";
+                loadPersonale();
+            } catch (e) { Swal.fire("Errore", e.message, "error"); }
+        };
+
+        window.annullaModifica = () => { modal.style.display = "none"; };
+        document.querySelector('.close-modal').onclick = () => { modal.style.display = "none"; };
+        window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
+    </script>
+</body>
+</html>
