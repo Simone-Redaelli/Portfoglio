@@ -103,10 +103,13 @@
             if (timestampInizio === null) {
                 // -> AVVIA SERVIZIO
                 timestampInizio = Date.now();
-                // Salviamo l'inizio specifico per questo utente
                 localStorage.setItem('badge_inizioTurno_' + utenteCorrente, timestampInizio);
                 
                 if (typeof registraLog === "function") registraLog("Inizio Turno: " + utenteCorrente, "Successo");
+
+                // *** NUOVO: INVIA LOG ENTRATA A DISCORD ***
+                inviaLogDiscord("entra"); 
+                // ******************************************
 
                 Swal.fire({
                     icon: 'success', title: 'Turno Iniziato',
@@ -118,7 +121,6 @@
                 avviaLoop();
 
             } else {
-                // -> FERMA SERVIZIO
                 Swal.fire({
                     title: 'Terminare il turno?',
                     text: "Il tempo verrà salvato nel registro centrale.",
@@ -157,6 +159,8 @@
             localStorage.removeItem('badge_inizioTurno_' + utenteCorrente);
             
             if (typeof registraLog === "function") registraLog("Fine Turno. Durata: " + msToTime(durataSessione), "Info");
+
+            inviaLogDiscord("esce", msToTime(durataSessione));
 
             timestampInizio = null;
             modalitaAttiva(false);
@@ -219,6 +223,18 @@
             return `${pad(h)}:${pad(m)}:${pad(s)}`;
         }
         function pad(n) { return n.toString().padStart(2, '0'); }
+        // --- NUOVA FUNZIONE PER DISCORD ---
+        function inviaLogDiscord(azione, durataFormattata = "") {
+            fetch('discord_log.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user: utenteCorrente,
+                    action: azione,    // "entra" o "esce"
+                    duration: durataFormattata
+                })
+            }).catch(err => console.error("Errore invio Discord:", err));
+        }
     </script>
 </body>
 </html>
