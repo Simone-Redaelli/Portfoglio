@@ -1518,3 +1518,26 @@ a, button, input {
     transform: scale(1.05);
     background-color: #008ba3;
 }
+
+/* STILE BOTTONE AREA RISERVATA */
+.nav-login-btn {
+    text-decoration: none;
+    background: rgba(100, 255, 218, 0.1); /* Sfondo verde trasparente */
+    color: #64ffda; /* Testo verde neon */
+    border: 1px solid #64ffda;
+    padding: 8px 20px;
+    border-radius: 50px; /* Arrotondato */
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 20px; /* Spazio dagli altri link */
+}
+
+.nav-login-btn:hover {
+    background: rgba(100, 255, 218, 0.2);
+    box-shadow: 0 0 15px rgba(100, 255, 218, 0.4); /* Effetto luce */
+    transform: translateY(-2px);
+}

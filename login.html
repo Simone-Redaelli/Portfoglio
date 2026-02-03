@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accedi - Area Riservata</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- 1. RESET E SFONDO --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+
+        body {
+            background-color: #0a192f; /* Blu scuro profondo */
+            color: #ccd6f6; /* Bianco sporco */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            /* Sfondo con sfumature e pattern sottile */
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(100, 255, 218, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(65, 105, 225, 0.08) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2364ffda' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            overflow: hidden;
+        }
+
+        /* --- 2. CARD DI LOGIN (Design Migliorato) --- */
+        .login-card {
+            background: rgba(17, 34, 64, 0.75);
+            backdrop-filter: blur(16px); /* Effetto vetro più forte */
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(100, 255, 218, 0.1); /* Bordo sottile verde */
+            border-radius: 24px;
+            padding: 45px 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(100, 255, 218, 0.05) inset; /* Bagliore interno */
+            text-align: center;
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Logo e Titoli */
+        .logo-area { margin-bottom: 35px; }
+        .logo-icon-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px; height: 70px;
+            background: rgba(100, 255, 218, 0.1);
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.2);
+        }
+        .logo-icon-container i { font-size: 2.2rem; color: #64ffda; }
+        
+        h2 { color: #e6f1ff; font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
+        p.subtitle { color: #8892b0; font-size: 0.95rem; }
+
+        /* --- 3. FORM CON ICONE --- */
+        .input-wrapper { position: relative; margin-bottom: 25px; text-align: left; }
+        
+        .input-wrapper label { 
+            display: block; color: #ccd6f6; margin-bottom: 10px; font-size: 0.9rem; font-weight: 600; padding-left: 5px;
+        }
+        
+        .input-field-container { position: relative; }
+        
+        .input-field-container i {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #8892b0; transition: 0.3s;
+        }
+        
+        input {
+            width: 100%;
+            padding: 16px 16px 16px 48px; /* Spazio per l'icona */
+            background: rgba(2, 12, 27, 0.5);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            background: rgba(2, 12, 27, 0.8);
+            border-color: #64ffda;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.15);
+        }
+        
+        input:focus + i { color: #64ffda; } /* Icona si illumina al focus */
+        input::placeholder { color: #556080; }
+
+        /* --- 4. BOTTONE ACCEDI --- */
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #64ffda, #4cd6b3); /* Sfumatura */
+            color: #0a192f;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(100, 255, 218, 0.3);
+            margin-top: 10px;
+        }
+        .btn-login:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 20px rgba(100, 255, 218, 0.4);
+        }
+        .btn-login:active { transform: translateY(-1px); }
+
+        /* --- 5. LINK "TORNA ALLA HOME" --- */
+        .back-home-link {
+            margin-top: 30px;
+            color: #8892b0;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s;
+            animation: fadeIn 1s ease-out 0.5s backwards; /* Appare dopo la card */
+        }
+        
+        .back-home-link:hover {
+            color: #64ffda;
+            background: rgba(100, 255, 218, 0.05);
+            transform: translateX(-5px);
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Responsive */
+        @media (max-height: 700px) { body { padding: 10px; } .login-card { padding: 30px 25px; } .logo-icon-container { width: 60px; height: 60px; margin-bottom: 15px; } .logo-icon-container i { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-area">
+            <div class="logo-icon-container">
+                <i class="fa-solid fa-fingerprint"></i>
+            </div>
+            <h2>Bentornato!</h2>
+            <p class="subtitle">Inserisci le tue credenziali per accedere.</p>
+        </div>
+
+        <div class="input-wrapper">
+            <label>Email o ID Utente</label>
+            <div class="input-field-container">
+                <input type="email" id="email" placeholder="nome@esempio.com">
+                <i class="fa-solid fa-envelope"></i>
+            </div>
+        </div>
+
+        <div class="input-wrapper">
+            <label>Password</label>
+            <div class="input-field-container">
+                <input type="password" id="password" placeholder="••••••••">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+        </div>
+
+        <button id="email-login-btn" class="btn-login">
+            <i class="fa-solid fa-right-to-bracket" style="margin-right: 8px;"></i> Accedi
+        </button>
+    </div>
+
+    <a href="index.html" class="back-home-link">
+        <i class="fa-solid fa-arrow-left-long"></i> Torna alla Home del Sito
+    </a>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"; // Aggiunto Firestore
+
+        // --- ⚠️ IMPORTANTE: INCOLLA QUI LA TUA 'firebaseConfig' VERA DALLA CONSOLE FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1LnDnFa6Yr0y2ZA1BrnGhjxGW4TrNjm0",
+            authDomain: "db--medici.firebaseapp.com",
+            projectId: "db--medici",
+            storageBucket: "db--medici.firebasestorage.app",
+            messagingSenderId: "1036578434966",
+            appId: "1:1036578434966:web:f7efe660bd2a744a99b7b7",
+            measurementId: "G-SXQDDFW294"
+        };
+
+        // Inizializzazione
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app); // Inizializza DB
+
+        // --- GESTIONE DEL CLICK SUL BOTTONE "ACCEDI" ---
+        document.getElementById('email-login-btn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('email-login-btn');
+            const originalBtnText = btn.innerHTML;
+
+            if(!email || !password) {
+                alert("⚠️ Per favore, inserisci sia l'email che la password.");
+                return;
+            }
+
+            // Feedback visivo durante il caricamento
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Accesso in corso...';
+            btn.style.opacity = "0.7";
+            btn.disabled = true;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                console.log("Login riuscito! Reindirizzamento...");
+                // Il redirect viene gestito da onAuthStateChanged qui sotto
+            } catch (error) {
+                console.error("Errore di login:", error);
+                let errorMessage = "Credenziali non valide. Riprova.";
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMessage = "Email o password errati.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = "Troppi tentativi. Riprova più tardi.";
+                }
+                alert("❌ Errore: " + errorMessage);
+                
+                // Ripristina il bottone
+                btn.innerHTML = originalBtnText;
+                btn.style.opacity = "1";
+                btn.disabled = false;
+            }
+        });
+
+        // --- REINDIRIZZAMENTO BASATO SUL RUOLO (MIGLIORATO) ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Invece di controllare l'email fissa, controlliamo il RUOLO nel database
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        if (userData.ruolo === 'admin') {
+                            window.location.href = "admin.html";
+                        } else {
+                            window.location.href = "portale.html";
+                        }
+                    } else {
+                        // Fallback se l'utente non è nel DB (es. vecchio admin creato a mano)
+                        if (user.email === "ciabatta12121@gmail.com" || user.email === "redaellisimone720@gmail.com") {
+                            window.location.href = "admin.html";
+                        } else {
+                            window.location.href = "portale.html";
+                        }
+                    }
+                } catch (e) {
+                    console.error("Errore nel controllo ruolo:", e);
+                    window.location.href = "portale.html"; // Fallback sicuro
+                }
+            }
+        });
+    </script>
+</body>
+</html>
